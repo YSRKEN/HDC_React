@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import './App.css';
+import InputWithSlider from './InputWithSlider';
 
 import logo from './logo.svg';
 
-class App extends React.Component {
+export default class App extends React.Component {
   public render() {
     return (
       <>
@@ -35,6 +36,9 @@ class App extends React.Component {
                 <Form.Group controlId="formBasicChecbox">
                   <Form.Check type="checkbox" label="Check me out" />
                 </Form.Group>
+                <Form.Group controlId="test">
+                  <InputWithSlider label="最大耐久" min={1} max={200} initialValue={31}/>
+                </Form.Group>
                 <Button variant="primary" type="submit">
                   Submit
                 </Button>
@@ -46,5 +50,3 @@ class App extends React.Component {
     );
   }
 }
-
-export default App;
