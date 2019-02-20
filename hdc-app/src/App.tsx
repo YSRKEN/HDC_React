@@ -37,7 +37,7 @@ export default class App extends React.Component {
                   <Form.Check type="checkbox" label="Check me out" />
                 </Form.Group>
                 <Form.Group controlId="test">
-                  <InputWithSlider label="最大耐久" min={1} max={200} initialValue={31}/>
+                  <InputWithSlider label="最大耐久" min={1} max={200} initialValue={135}/>
                 </Form.Group>
                 <Button variant="primary" type="submit">
                   Submit
