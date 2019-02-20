@@ -21,7 +21,7 @@ export default class InputWithSlider extends React.Component<InputWithSliderProp
 	public render() {
 		const { label, min, max } = this.props;
 		return (
-			<div className="d-flex">
+			<div className="d-flex my-1">
 				<label className="text-nowrap mt-1">{label}</label>
 				<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + this.state.value}/>
 				<input type="range" className="custom-range mt-1" min={min} max={max} value={"" + this.state.value}
