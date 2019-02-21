@@ -22,28 +22,28 @@ interface IOutputGraphProps {
 	nowHp: number;
 }
 
-const OutputGraph: React.FC<IOutputGraphProps> = ({armor, maxHp, name, nowHp}) => {
+const OutputGraph: React.FC<IOutputGraphProps> = ({ armor, maxHp, name, nowHp }) => {
 	const createGraphData = () => {
 		const plotData = calcPlotData(maxHp, armor, nowHp);
 		return {
-		  datasets: [{
-			backgroundColor: Chart.helpers.color(CHART_COLORS.red).alpha(0.2).rgbString(),
-			borderColor: CHART_COLORS.red,
-			data: plotData,
-			label: name
-		  }]
+			datasets: [{
+				backgroundColor: Chart.helpers.color(CHART_COLORS.red).alpha(0.2).rgbString(),
+				borderColor: CHART_COLORS.red,
+				data: plotData,
+				label: name
+			}]
 		};
-	  }
+	}
 
 	return (
 		<Scatter width={450} height={450} data={createGraphData} options={{
 			elements: { line: { tension: 0 } },
 			scales: {
-			xAxes: [{ scaleLabel: { display: true, labelString: '最終攻撃力' }, }],
-			yAxes: [{ scaleLabel: { display: true, labelString: '大破率(％)' }, }]
+				xAxes: [{ scaleLabel: { display: true, labelString: '最終攻撃力' }, }],
+				yAxes: [{ scaleLabel: { display: true, labelString: '大破率(％)' }, }]
 			},
 			showLines: true
-	  }} />
+		}} />
 	);
 }
 

@@ -20,7 +20,7 @@ interface IPoint {
 const calcVerylightDamageProb = (nowHp: number, heavyDamageHp: number) => {
   // 大破した回数をカウントする
   let count = 0;
-  for(let hi = 0; hi < nowHp; ++hi) {
+  for (let hi = 0; hi < nowHp; ++hi) {
     // カスダメ時のダメージ
     const damage = Math.floor((MIN_VERY_LIGHT_PER * nowHp + RANGE_VERY_LIGHT_PER * hi) / 100.0);
 
@@ -28,7 +28,7 @@ const calcVerylightDamageProb = (nowHp: number, heavyDamageHp: number) => {
     const leaveHp = nowHp - damage;
 
     // 大破判定
-    if(leaveHp <= heavyDamageHp) {
+    if (leaveHp <= heavyDamageHp) {
       ++count;
     }
   }
@@ -41,7 +41,7 @@ const calcVerylightDamageProb = (nowHp: number, heavyDamageHp: number) => {
 const calcStopperDamageProb = (nowHp: number, heavyDamageHp: number) => {
   // 大破した回数をカウントする
   let count = 0;
-  for(let hi = 0; hi < nowHp; ++hi) {
+  for (let hi = 0; hi < nowHp; ++hi) {
     // 轟沈ストッパー時のダメージ
     const damage = Math.floor((MIN_STOPPER_PER * nowHp + RANGE_STOPPER_PER * hi) / 100.0);
 
@@ -49,7 +49,7 @@ const calcStopperDamageProb = (nowHp: number, heavyDamageHp: number) => {
     const leaveHp = nowHp - damage;
 
     // 大破判定
-    if(leaveHp <= heavyDamageHp) {
+    if (leaveHp <= heavyDamageHp) {
       ++count;
     }
   }
@@ -77,12 +77,12 @@ export const calcPlotData = (maxHp: number, armor: number, nowHp: number) => {
 
   // 最終攻撃力がmaxVeryLightPowerの場合から順に計算していく
   const output: IPoint[] = [];
-  for(let power = maxVeryLightPower; power <= minStopperPower; ++power) {
+  for (let power = maxVeryLightPower; power <= minStopperPower; ++power) {
     // 最終攻撃力=powerの際の大破率
     let heavyDamageProbSum = 0.0;
 
     // 装甲乱数の計算
-    for(let ai = 0; ai < armor; ++ai) {
+    for (let ai = 0; ai < armor; ++ai) {
       const armorRandom = MIN_ARMOR_PER * armor + RANGE_ARMOR_PER * ai;
 
       // カスダメか？
@@ -94,20 +94,20 @@ export const calcPlotData = (maxHp: number, armor: number, nowHp: number) => {
 
       // 轟沈ストッパーか？
       const leaveHp = nowHp - damage;
-      if(leaveHp <= 0) {
+      if (leaveHp <= 0) {
         heavyDamageProbSum += stopperProb;
         continue;
       }
 
       // 通常のダメージ処理
-      if(leaveHp <= heavyDamageHp) {
+      if (leaveHp <= heavyDamageHp) {
         heavyDamageProbSum += 1.0;
       }
     }
 
     // データを追加
     const heavyDamageProb = heavyDamageProbSum / armor;
-    output.push({x: power, y: heavyDamageProb * 100});
+    output.push({ x: power, y: heavyDamageProb * 100 });
   }
   return output;
 }

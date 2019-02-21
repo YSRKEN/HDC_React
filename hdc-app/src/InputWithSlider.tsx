@@ -19,7 +19,7 @@ interface InputWithSliderProps {
 /**
  * 自作スライダー
  */
-const InputWithSlider: React.FC<InputWithSliderProps> = ({label, initialValue, min, max, setFunc}) => {
+const InputWithSlider: React.FC<InputWithSliderProps> = ({ label, initialValue, min, max, setFunc }) => {
 	/* スライダーの値 */
 	const [value, changeValue] = React.useState(initialValue);
 
@@ -33,9 +33,9 @@ const InputWithSlider: React.FC<InputWithSliderProps> = ({label, initialValue, m
 	return (
 		<div className="d-flex my-1">
 			<label className="text-nowrap mt-1">{label}</label>
-			<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + value} readOnly={true}/>
+			<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + value} readOnly={true} />
 			<input type="range" className="custom-range mt-1" min={min} max={max} value={"" + value}
-				onChange={onChangeSlider}/>
+				onChange={onChangeSlider} />
 		</div>
 	);
 };

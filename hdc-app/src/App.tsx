@@ -33,12 +33,12 @@ const App: React.FC = () => {
   };
 
   const onChangeName = (e: React.ChangeEvent<ReplaceProps<"input", BsPrefixProps<"input">>>) => {
-		const nameValue = e.target.value;
-		if (typeof(nameValue) === "string") {
+    const nameValue = e.target.value;
+    if (typeof (nameValue) === "string") {
       setName(nameValue);
       saveSettingString('name', nameValue);
     }
-	};
+  };
 
   return (
     <>
@@ -48,8 +48,8 @@ const App: React.FC = () => {
             <h1 className="text-center">艦娘大破率計算機</h1>
             <InputSetting armor={armor} maxHp={maxHp} name={name} nowHp={nowHp}
               setArmorFunc={setArmorFunc} setMaxHpFunc={setMaxHpFunc}
-              setNowHpFunc={setNowHpFunc} onChangeName={onChangeName}/>
-            <OutputGraph armor={armor} maxHp={maxHp} name={name} nowHp={nowHp}/>
+              setNowHpFunc={setNowHpFunc} onChangeName={onChangeName} />
+            <OutputGraph armor={armor} maxHp={maxHp} name={name} nowHp={nowHp} />
           </Col>
         </Row>
       </Container>
