@@ -107,7 +107,7 @@ export const calcPlotData = (maxHp: number, armor: number, nowHp: number) => {
 
     // データを追加
     const heavyDamageProb = heavyDamageProbSum / armor;
-    output.push({x: power, y: heavyDamageProb});
+    output.push({x: power, y: heavyDamageProb * 100});
   }
   return output;
 }
