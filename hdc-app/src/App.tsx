@@ -3,6 +3,9 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import './App.css';
 import InputWithSlider from './InputWithSlider';
 
+/**
+ * アプリケーション全体
+ */
 export default class App extends React.Component {
   public render() {
     return (

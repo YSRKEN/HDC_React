@@ -1,5 +1,8 @@
 import * as React from 'react';
 
+/**
+ * スライダーの設定を書くためのProps
+ */
 interface InputWithSliderProps {
 	label: string;
 	initialValue: number;
@@ -7,10 +10,16 @@ interface InputWithSliderProps {
 	max: number;
 }
 
+/**
+ * スライダーの状態を示すためのState
+ */
 interface InputWithSliderState {
 	value: number;
 }
 
+/**
+ * 自作スライダー
+ */
 export default class InputWithSlider extends React.Component<InputWithSliderProps, InputWithSliderState> {
 	constructor(props: InputWithSliderProps) {
 		super(props);
@@ -30,6 +39,10 @@ export default class InputWithSlider extends React.Component<InputWithSliderProp
 		);
 	}
 
+	/**
+	 * スライダーを動かした際の動き
+	 * @param e イベント
+	 */
 	private onChangeSlider(e: React.ChangeEvent<HTMLInputElement>) {
 		const sliderValue = parseInt(e.target.value, 10);
 		this.setState({ value: sliderValue });
