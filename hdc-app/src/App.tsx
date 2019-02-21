@@ -4,6 +4,7 @@ import { Col, Container, Form, Row } from 'react-bootstrap';
 import { Scatter } from 'react-chartjs-2';
 import { calcPlotData } from './algorithm';
 import './App.css';
+import { loadSettingInteger, saveSettingNumber } from './data_store';
 import InputWithSlider from './InputWithSlider';
 
 const CHART_COLORS = {
@@ -28,24 +29,27 @@ const App: React.SFC = () => {
   }
 
   // Hooksを設定した
-  const [maxHp, setMaxHp] = React.useState(35);
-  const [armor, setArmor] = React.useState(49);
-  const [nowHp, setNowHp] = React.useState(35);
+  const [maxHp, setMaxHp] = React.useState(loadSettingInteger('maxHp', 35));
+  const [armor, setArmor] = React.useState(loadSettingInteger('armor', 49));
+  const [nowHp, setNowHp] = React.useState(loadSettingInteger('nowHp', 35));
   const [graphData, setGraphData] = React.useState(createGraphData());
 
   // 使用する関数を作成した
   const setMaxHpFunc = (value: number) => {
     setMaxHp(value);
+    saveSettingNumber('maxHp', value);
     redrawGraphFunc();
   };
 
   const setArmorFunc = (value: number) => {
     setArmor(value);
+    saveSettingNumber('armor', value);
     redrawGraphFunc();
   };
 
   const setNowHpFunc = (value: number) => {
     setNowHp(value);
+    saveSettingNumber('nowHp', value);
     redrawGraphFunc();
   };
 
