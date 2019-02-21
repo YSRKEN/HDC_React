@@ -19,7 +19,7 @@ interface InputWithSliderProps {
 /**
  * 自作スライダー
  */
-const InputWithSlider: React.SFC<InputWithSliderProps> = ({label, initialValue, min, max, setFunc}) => {
+const InputWithSlider: React.FC<InputWithSliderProps> = ({label, initialValue, min, max, setFunc}) => {
 	/* スライダーの値 */
 	const [value, changeValue] = React.useState(initialValue);
 
