@@ -4,47 +4,37 @@ import * as React from 'react';
  * スライダーの設定を書くためのProps
  */
 interface InputWithSliderProps {
+	// 表示ラベルの文字列
 	label: string;
+	// 初期値
 	initialValue: number;
+	// 最小値
 	min: number;
+	// 最大値
 	max: number;
-}
-
-/**
- * スライダーの状態を示すためのState
- */
-interface InputWithSliderState {
-	value: number;
 }
 
 /**
  * 自作スライダー
  */
-export default class InputWithSlider extends React.Component<InputWithSliderProps, InputWithSliderState> {
-	constructor(props: InputWithSliderProps) {
-		super(props);
-		this.state = { value: this.props.initialValue };
-		this.onChangeSlider = this.onChangeSlider.bind(this);
-	}
+const InputWithSlider: React.SFC<InputWithSliderProps> = ({label, initialValue, min, max}) => {
+	/* スライダーの値 */
+	const [value, changeValue] = React.useState(initialValue);
 
-	public render() {
-		const { label, min, max } = this.props;
-		return (
-			<div className="d-flex my-1">
-				<label className="text-nowrap mt-1">{label}</label>
-				<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + this.state.value}/>
-				<input type="range" className="custom-range mt-1" min={min} max={max} value={"" + this.state.value}
-					onChange={this.onChangeSlider}/>
-			</div>
-		);
-	}
-
-	/**
-	 * スライダーを動かした際の動き
-	 * @param e イベント
-	 */
-	private onChangeSlider(e: React.ChangeEvent<HTMLInputElement>) {
+	/* スライダーを動かした際の動き */
+	const onChangeSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const sliderValue = parseInt(e.target.value, 10);
-		this.setState({ value: sliderValue });
-	}
-}
+		changeValue(sliderValue);
+	};
+
+	return (
+		<div className="d-flex my-1">
+			<label className="text-nowrap mt-1">{label}</label>
+			<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + value} readOnly={true}/>
+			<input type="range" className="custom-range mt-1" min={min} max={max} value={"" + value}
+				onChange={onChangeSlider}/>
+		</div>
+	);
+};
+
+export default InputWithSlider
