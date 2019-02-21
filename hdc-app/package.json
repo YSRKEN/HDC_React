@@ -16,10 +16,13 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
+    "@types/chart.js": "^2.7.45",
     "@types/jest": "^24.0.6",
     "@types/node": "^11.9.4",
     "@types/react": "^16.8.4",
     "@types/react-dom": "^16.8.2",
+    "chart.js": "^2.7.3",
+    "react-chartjs-2": "^2.7.4",
     "typescript": "^3.3.3"
   }
 }
