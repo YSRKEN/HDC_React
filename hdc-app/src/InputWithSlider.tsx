@@ -12,12 +12,14 @@ interface InputWithSliderProps {
 	min: number;
 	// 最大値
 	max: number;
+	// 設定用関数
+	setFunc: (value: number) => void;
 }
 
 /**
  * 自作スライダー
  */
-const InputWithSlider: React.SFC<InputWithSliderProps> = ({label, initialValue, min, max}) => {
+const InputWithSlider: React.SFC<InputWithSliderProps> = ({label, initialValue, min, max, setFunc}) => {
 	/* スライダーの値 */
 	const [value, changeValue] = React.useState(initialValue);
 
@@ -25,6 +27,7 @@ const InputWithSlider: React.SFC<InputWithSliderProps> = ({label, initialValue, 
 	const onChangeSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const sliderValue = parseInt(e.target.value, 10);
 		changeValue(sliderValue);
+		setFunc(sliderValue);
 	};
 
 	return (
