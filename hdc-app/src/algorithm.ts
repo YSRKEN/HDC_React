@@ -1,7 +1,6 @@
 // 装甲乱数における最小値と範囲と最大値の倍率(％)
 const MIN_ARMOR_PER = 70;
 const RANGE_ARMOR_PER = 60;
-const MAX_ARMOR_PER = MIN_ARMOR_PER + RANGE_ARMOR_PER;
 
 // カスダメにおける最小値と範囲の倍率(％)
 const MIN_VERY_LIGHT_PER = 6;
@@ -60,7 +59,7 @@ const calcStopperDamageProb = (nowHp: number, heavyDamageHp: number) => {
 }
 
 // プロット用データを計算する
-const calcPlotData = (maxHp: number, armor: number, nowHp: number) => {
+export const calcPlotData = (maxHp: number, armor: number, nowHp: number) => {
   // 確実にカスダメとなる最大の最終攻撃力
   const maxVeryLightPower = Math.ceil(armor * MIN_ARMOR_PER / 100.0);
 
