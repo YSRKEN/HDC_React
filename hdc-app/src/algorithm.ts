@@ -58,13 +58,15 @@ const calcStopperDamageProb = (nowHp: number, heavyDamageHp: number) => {
   return 1.0 * count / nowHp;
 }
 
+// 確実に轟沈ストッパーが掛かる最小の最終攻撃力を計算する
+export const calcMinStopperPower = (armor: number, nowHp: number) => {
+  return nowHp + Math.ceil((armor * MIN_ARMOR_PER + (armor - 1) * RANGE_ARMOR_PER) / 100.0);
+}
+
 // プロット用データを計算する
-export const calcPlotData = (maxHp: number, armor: number, nowHp: number) => {
+export const calcPlotData = (maxHp: number, armor: number, nowHp: number, rightXValue?: number) => {
   // 確実にカスダメとなる最大の最終攻撃力
   const maxVeryLightPower = Math.ceil(armor * MIN_ARMOR_PER / 100.0);
-
-  // 確実に轟沈ストッパーが掛かる最小の最終攻撃力
-  const minStopperPower = nowHp + Math.ceil((armor * MIN_ARMOR_PER + (armor - 1) * RANGE_ARMOR_PER) / 100.0);
 
   // 大破判定を受ける最大の耐久値
   const heavyDamageHp = Math.floor(maxHp / 4);
@@ -77,7 +79,8 @@ export const calcPlotData = (maxHp: number, armor: number, nowHp: number) => {
 
   // 最終攻撃力がmaxVeryLightPowerの場合から順に計算していく
   const output: IPoint[] = [];
-  for (let power = maxVeryLightPower; power <= minStopperPower; ++power) {
+  const maxPower = (typeof rightXValue === "undefined" ? calcMinStopperPower(armor, nowHp) : rightXValue);
+  for (let power = maxVeryLightPower; power <= maxPower; ++power) {
     // 最終攻撃力=powerの際の大破率
     let heavyDamageProbSum = 0.0;
 

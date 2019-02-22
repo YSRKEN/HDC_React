@@ -1,7 +1,7 @@
 import * as Chart from 'chart.js';
 import * as React from 'react';
 import { Scatter } from 'react-chartjs-2';
-import { calcPlotData } from './algorithm';
+import { calcMinStopperPower, calcPlotData } from './algorithm';
 import { IGraphParam } from './App';
 
 const CHART_COLORS = [
@@ -17,14 +17,18 @@ const CHART_COLORS = [
 ];
 
 const OutputGraph: React.FC<{params: IGraphParam[]}> = ({params}) => {
-	const createGraphData = () => ({
-		datasets: params.map((param, i) => ({
-			backgroundColor: Chart.helpers.color(CHART_COLORS[i]).alpha(0.2).rgbString(),
-			borderColor: CHART_COLORS[i],
-			data: calcPlotData(param.maxHp, param.armor, param.nowHp),
-			label: param.name
-		}))
-	});
+	const createGraphData = () => {
+		const rightXValue = Math.max(...params.map(param => calcMinStopperPower(param.armor, param.nowHp)));
+		return {
+			datasets: params.map((param, i) => ({
+				backgroundColor: Chart.helpers.color(CHART_COLORS[i]).alpha(0.2).rgbString(),
+				borderColor: CHART_COLORS[i],
+				data: calcPlotData(param.maxHp, param.armor, param.nowHp, rightXValue + 10),
+				fill: false,
+				label: param.name
+			}))
+		};
+	};
 
 	return (
 		<Scatter width={450} height={450} data={createGraphData} options={{
