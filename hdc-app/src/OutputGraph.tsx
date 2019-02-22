@@ -5,13 +5,15 @@ import { calcPlotData } from './algorithm';
 import { IGraphParam } from './App';
 
 const CHART_COLORS = [
-	"#FF0000",
-	"#00FF00",
-	"#0000FF",
-	"#FFFF00",
-	"#00FFFF",
-	"#FF00FF",
-	"#000000",
+	"#FF4B00",
+	"#FFF100",
+	"#03AF7A",
+	"#005AFF",
+	"#4DC4FF",
+	"#FF8082",
+	"#F6AA00",
+	"#990099",
+	"#804000",
 ];
 
 const OutputGraph: React.FC<{params: IGraphParam[]}> = ({params}) => {
