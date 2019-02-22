@@ -17,8 +17,16 @@ const CHART_COLORS = [
 ];
 
 const OutputGraph: React.FC<{params: IGraphParam[]}> = ({params}) => {
-	const createGraphData = () => {
-		const rightXValue = Math.max(...params.map(param => calcMinStopperPower(param.armor, param.nowHp)));
+	const scatterElement = React.useRef<Scatter>(null);
+
+	const createGraphData = (ignoreNames?: string[]) => {
+		const ignoreNames2 = ignoreNames === undefined ? [] : ignoreNames;
+		let rightXValue = 200;
+		if (ignoreNames2.length !== params.length) {
+			rightXValue = Math.max(...params
+				.filter(param => !ignoreNames2.includes(param.name))
+				.map(param => calcMinStopperPower(param.armor, param.nowHp)));
+		}
 		return {
 			datasets: params.map((param, i) => ({
 				backgroundColor: Chart.helpers.color(CHART_COLORS[i]).alpha(0.2).rgbString(),
@@ -31,8 +39,22 @@ const OutputGraph: React.FC<{params: IGraphParam[]}> = ({params}) => {
 		};
 	};
 
+	const [graphData, setGraphData] = React.useState(createGraphData());
+
+	const onClickGraph = () => {
+		const scatterObject = scatterElement.current;
+		if (scatterObject == null) {
+			return;
+		}
+		const temp: any = scatterObject.chartInstance;
+		const legendItems: Array<{text: string, hidden: boolean}> = temp.legend.legendItems;
+		const ignoreNames = legendItems.filter(item => item.hidden).map(item => item.text);
+		setGraphData(createGraphData(ignoreNames));
+	};
+
 	return (
-		<Scatter width={450} height={450} data={createGraphData}
+		<Scatter width={450} height={450} data={graphData}
+		ref={scatterElement} onElementsClick={onClickGraph}
 		options={{
 			elements: { line: { tension: 0 } },
 			scales: {
