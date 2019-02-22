@@ -25,13 +25,15 @@ const OutputGraph: React.FC<{params: IGraphParam[]}> = ({params}) => {
 				borderColor: CHART_COLORS[i],
 				data: calcPlotData(param.maxHp, param.armor, param.nowHp, rightXValue + 10),
 				fill: false,
-				label: param.name
+				label: param.name,
+				pointRadius: 0
 			}))
 		};
 	};
 
 	return (
-		<Scatter width={450} height={450} data={createGraphData} options={{
+		<Scatter width={450} height={450} data={createGraphData}
+		options={{
 			elements: { line: { tension: 0 } },
 			scales: {
 				xAxes: [{ scaleLabel: { display: true, labelString: '最終攻撃力' }, }],
