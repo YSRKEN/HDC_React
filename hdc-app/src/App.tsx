@@ -103,8 +103,11 @@ const App: React.FC = () => {
 
   const addParam = () => {
     const param1 = getParam({});
-    setParamList([...paramList, param1]);
-    const param2 = getParam({});
+    const newParamList = [...paramList, param1];
+    setParamList(newParamList);
+    saveSettingString('paramList', JSON.stringify(newParamList));
+    setName((temp) => temp+'-2');
+    const param2 = getParam({name: name+'-2'});
     setTempParamList([...paramList, param1, param2]);
   };
 
@@ -113,14 +116,9 @@ const App: React.FC = () => {
   const [armor, setArmor] = React.useState(loadSettingInteger('armor', 49));
   const [nowHp, setNowHp] = React.useState(loadSettingInteger('nowHp', 35));
   const [name, setName] = React.useState(loadSettingString('name', '入力値'));
-  const [paramList, setParamList] = React.useState<IGraphParam[]>([
-    { maxHp: 23, armor: 38, nowHp: 23, name: '神風改' },
-    { maxHp: 30, armor: 49, nowHp: 30, name: '吹雪改' },
-    { maxHp: 31, armor: 50, nowHp: 31, name: '暁改二' },
-    { maxHp: 36, armor: 59, nowHp: 36, name: '島風改' },
-    { maxHp: 37, armor: 53, nowHp: 37, name: '秋月改' },
-    { maxHp: 37, armor: 86, nowHp: 37, name: 'Верный+バルジ4' },
-  ]);
+  const [paramList, setParamList] = React.useState<IGraphParam[]>(
+    JSON.parse(loadSettingString('paramList', '[]'))
+  );
   const [tempParamList, setTempParamList] = React.useState<IGraphParam[]>([...paramList, getParam({})]);
   const [ignoreNames, setIgnoreNames] = React.useState<string[]>([]);
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
