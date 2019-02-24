@@ -101,12 +101,25 @@ const App: React.FC = () => {
 		};
 	};
 
+  const createNewName = (nameArgs: string, list: string[]) => {
+    nameArgs = nameArgs.replace(/-[0-9]+$/g, '');
+    let i = 2;
+    while(true) {
+      const name2 = `${nameArgs}-${i}`;
+      if (list.includes(name2)) {
+        ++i;
+      } else {
+        return name2;
+      }
+    }
+  }
+
   const addParam = () => {
     const param1 = getParam({});
     const newParamList = [...paramList, param1];
     setParamList(newParamList);
     saveSettingString('paramList', JSON.stringify(newParamList));
-    setName((temp) => temp+'-2');
+    setName((temp) => createNewName(temp, newParamList.map(p => p.name)));
     const param2 = getParam({name: name+'-2'});
     setTempParamList([...paramList, param1, param2]);
   };
