@@ -125,9 +125,36 @@ const App: React.FC = () => {
     const newParamList = [...paramList, param1];
     setParamList(newParamList);
     saveSettingString('paramList', JSON.stringify(newParamList));
-    setName((temp) => createNewName(temp, newParamList.map(p => p.name)));
-    const param2 = getParam({name: name+'-2'});
+    const newName = createNewName(name, newParamList.map(p => p.name));
+    setName(newName);
+    const param2 = getParam({name: newName});
     setTempParamList([...paramList, param1, param2]);
+  };
+
+  const deleteParam = (deletedName: string) => {
+    if (paramList.map(p => p.name).includes(deletedName)) {
+      const newParamList = [];
+      for (const data of paramList){
+        if (data.name === deletedName) {
+          continue;
+        }
+        const newData = {
+          "armor": data.armor,
+          "maxHp": data.maxHp,
+          "name": data.name,
+          "nowHp": data.nowHp,
+        };
+        newParamList.push(newData);
+      }
+      setParamList(newParamList);
+      saveSettingString('paramList', JSON.stringify(newParamList));
+      const newName = createNewName(name, newParamList.map(p => p.name));
+      setName(newName);
+      const param2 = getParam({name: newName});
+      const tempParamList2 = [...paramList, param2];
+      setTempParamList(tempParamList2);
+      setChartData(createGraphData(tempParamList2, ignoreNames));
+    }
   };
 
   // Hooksを設定した
@@ -153,7 +180,7 @@ const App: React.FC = () => {
               setNowHpFunc={setNowHpFunc} onChangeName={onChangeName}
               onAddButton={addParam}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
-            <OutputList params={paramList} />
+            <OutputList params={paramList} deleteParam={deleteParam}/>
           </Col>
         </Row>
       </Container>
