@@ -17,6 +17,46 @@ export interface IGraphParam {
  * アプリケーション全体
  */
 const App: React.FC = () => {
+  // 使用する関数を作成した
+  const setMaxHpFunc = (value: number) => {
+    setMaxHp(value);
+    saveSettingNumber('maxHp', value);
+    setTempParamList(getParamList({maxHp: value}));
+  };
+
+  const setArmorFunc = (value: number) => {
+    setArmor(value);
+    saveSettingNumber('armor', value);
+    setTempParamList(getParamList({armor: value}));
+  };
+
+  const setNowHpFunc = (value: number) => {
+    setNowHp(value);
+    saveSettingNumber('nowHp', value);
+    setTempParamList(getParamList({nowHp: value}));
+  };
+
+  const onChangeName = (e: React.ChangeEvent<ReplaceProps<"input", BsPrefixProps<"input">>>) => {
+    const nameValue = e.target.value;
+    if (typeof (nameValue) === "string") {
+      setName(nameValue);
+      saveSettingString('name', nameValue);
+      setTempParamList(getParamList({name: nameValue}));
+    }
+  };
+
+  const getParamList = (args: {maxHp?: number, armor?: number, nowHp?: number, name?: string}) => {
+    const param: IGraphParam = {
+      "armor": args.armor === undefined ? armor : args.armor,
+      "maxHp": args.maxHp === undefined ? maxHp : args.maxHp,
+      "name": args.name === undefined ? name : args.name,
+      "nowHp": args.nowHp === undefined ? nowHp : args.nowHp,
+    };
+// tslint:disable-next-line: no-console
+    console.log([...paramList, param]);
+    return [...paramList, param];
+  };
+
   // Hooksを設定した
   const [maxHp, setMaxHp] = React.useState(loadSettingInteger('maxHp', 35));
   const [armor, setArmor] = React.useState(loadSettingInteger('armor', 49));
@@ -30,35 +70,7 @@ const App: React.FC = () => {
     { maxHp: 37, armor: 53, nowHp: 37, name: '秋月改' },
     { maxHp: 37, armor: 86, nowHp: 37, name: 'Верный+バルジ4' },
   ]);
-
-  // 使用する関数を作成した
-  const setMaxHpFunc = (value: number) => {
-    setMaxHp(value);
-    saveSettingNumber('maxHp', value);
-  };
-
-  const setArmorFunc = (value: number) => {
-    setArmor(value);
-    saveSettingNumber('armor', value);
-  };
-
-  const setNowHpFunc = (value: number) => {
-    setNowHp(value);
-    saveSettingNumber('nowHp', value);
-  };
-
-  const onChangeName = (e: React.ChangeEvent<ReplaceProps<"input", BsPrefixProps<"input">>>) => {
-    const nameValue = e.target.value;
-    if (typeof (nameValue) === "string") {
-      setName(nameValue);
-      saveSettingString('name', nameValue);
-    }
-  };
-
-  const getParamList = (arg1: number, arg2: number, arg3: number, arg4: string) => {
-    const param: IGraphParam = {"maxHp": arg1, "armor": arg2, "nowHp": arg3, "name": arg4};
-    return [...paramList, param];
-  };
+  const [tempParamList, setTempParamList] = React.useState<IGraphParam[]>(getParamList({}));
 
   return (
     <>
@@ -69,7 +81,7 @@ const App: React.FC = () => {
             <InputSetting armor={armor} maxHp={maxHp} name={name} nowHp={nowHp}
               setArmorFunc={setArmorFunc} setMaxHpFunc={setMaxHpFunc}
               setNowHpFunc={setNowHpFunc} onChangeName={onChangeName} />
-            <OutputGraph params={getParamList(maxHp, armor, nowHp, name)} />
+            <OutputGraph params={tempParamList} />
           </Col>
         </Row>
       </Container>
