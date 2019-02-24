@@ -39,8 +39,6 @@ const OutputGraph: React.FC<{params: IGraphParam[]}> = ({params}) => {
 		};
 	};
 
-	const [graphData, setGraphData] = React.useState(createGraphData());
-
 	const onClickGraph = () => {
 		const scatterObject = scatterElement.current;
 		if (scatterObject == null) {
@@ -51,6 +49,10 @@ const OutputGraph: React.FC<{params: IGraphParam[]}> = ({params}) => {
 		const ignoreNames = legendItems.filter(item => item.hidden).map(item => item.text);
 		setGraphData(createGraphData(ignoreNames));
 	};
+
+	const [graphData, setGraphData] = React.useState(createGraphData());
+
+	React.useEffect(() => onClickGraph(), [params]);
 
 	return (
 		<Scatter width={450} height={450} data={graphData}

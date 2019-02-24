@@ -52,8 +52,6 @@ const App: React.FC = () => {
       "name": args.name === undefined ? name : args.name,
       "nowHp": args.nowHp === undefined ? nowHp : args.nowHp,
     };
-// tslint:disable-next-line: no-console
-    console.log([...paramList, param]);
     return [...paramList, param];
   };
 
