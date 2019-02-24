@@ -1,6 +1,8 @@
+import * as Chart from 'chart.js';
 import * as React from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { BsPrefixProps, ReplaceProps } from 'react-bootstrap/helpers';
+import { calcMinStopperPower, calcPlotData } from './algorithm';
 import './App.css';
 import { loadSettingInteger, loadSettingString, saveSettingNumber, saveSettingString } from './data_store';
 import InputSetting from './InputSetting';
@@ -14,6 +16,18 @@ export interface IGraphParam {
   name: string;
 }
 
+export const CHART_COLORS = [
+	"#FF4B00",
+	"#FFF100",
+	"#03AF7A",
+	"#005AFF",
+	"#4DC4FF",
+	"#FF8082",
+	"#F6AA00",
+	"#990099",
+	"#804000",
+];
+
 /**
  * アプリケーション全体
  */
@@ -22,19 +36,25 @@ const App: React.FC = () => {
   const setMaxHpFunc = (value: number) => {
     setMaxHp(value);
     saveSettingNumber('maxHp', value);
-    setTempParamList([...paramList, getParam({maxHp: value})]);
+    const tempParamList2 = [...paramList, getParam({maxHp: value})];
+    setTempParamList(tempParamList2);
+    setChartData(createGraphData(tempParamList2, ignoreNames));
   };
 
   const setArmorFunc = (value: number) => {
     setArmor(value);
     saveSettingNumber('armor', value);
-    setTempParamList([...paramList, getParam({armor: value})]);
+    const tempParamList2 = [...paramList, getParam({armor: value})];
+    setTempParamList(tempParamList2);
+    setChartData(createGraphData(tempParamList2, ignoreNames));
   };
 
   const setNowHpFunc = (value: number) => {
     setNowHp(value);
     saveSettingNumber('nowHp', value);
-    setTempParamList([...paramList, getParam({nowHp: value})]);
+    const tempParamList2 = [...paramList, getParam({nowHp: value})];
+    setTempParamList(tempParamList2);
+    setChartData(createGraphData(tempParamList2, ignoreNames));
   };
 
   const onChangeName = (e: React.ChangeEvent<ReplaceProps<"input", BsPrefixProps<"input">>>) => {
@@ -42,7 +62,9 @@ const App: React.FC = () => {
     if (typeof (nameValue) === "string") {
       setName(nameValue);
       saveSettingString('name', nameValue);
-      setTempParamList([...paramList, getParam({name: nameValue})]);
+      const tempParamList2 = [...paramList, getParam({name: nameValue})];
+      setTempParamList(tempParamList2);
+      setChartData(createGraphData(tempParamList2, ignoreNames));
     }
   };
 
@@ -59,6 +81,25 @@ const App: React.FC = () => {
       "nowHp": nowHp2,
     };
   };
+
+	const createGraphData = (paramListArgs: IGraphParam[], ignoreNamesArgs: string[]) => {
+		let rightXValue = 200;
+		if (ignoreNamesArgs.length !== paramListArgs.length) {
+			rightXValue = Math.max(...paramListArgs
+				.filter(param => !ignoreNamesArgs.includes(param.name))
+				.map(param => calcMinStopperPower(param.armor, param.nowHp)));
+		}
+		return {
+			datasets: paramListArgs.map((param, i) => ({
+				backgroundColor: Chart.helpers.color(CHART_COLORS[i]).alpha(0.2).rgbString(),
+				borderColor: CHART_COLORS[i],
+				data: calcPlotData(param.maxHp, param.armor, param.nowHp, rightXValue + 10),
+				fill: false,
+				label: param.name,
+				pointRadius: 0
+			}))
+		};
+	};
 
   const addParam = () => {
     const param1 = getParam({});
@@ -81,6 +122,8 @@ const App: React.FC = () => {
     { maxHp: 37, armor: 86, nowHp: 37, name: 'Верный+バルジ4' },
   ]);
   const [tempParamList, setTempParamList] = React.useState<IGraphParam[]>([...paramList, getParam({})]);
+  const [ignoreNames, setIgnoreNames] = React.useState<string[]>([]);
+  const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
 
   return (
     <>
@@ -92,7 +135,7 @@ const App: React.FC = () => {
               setArmorFunc={setArmorFunc} setMaxHpFunc={setMaxHpFunc}
               setNowHpFunc={setNowHpFunc} onChangeName={onChangeName}
               onAddButton={addParam}/>
-            <OutputGraph params={tempParamList} />
+            <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
             <OutputList params={paramList} />
           </Col>
         </Row>
