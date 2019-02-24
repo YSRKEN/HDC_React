@@ -23,10 +23,13 @@ interface InputSettingProps {
 	setNowHpFunc: (value: number) => void;
 	// 設定名を変更した際の処理
 	onChangeName: (e: React.ChangeEvent<ReplaceProps<"input", BsPrefixProps<"input">>>) => void;
+	// 追加ボタンを押した際の処理
+	onAddButton: () => void;
 }
 
 const InputSetting: React.FC<InputSettingProps>
-	= ({ armor, maxHp, name, nowHp, setArmorFunc, setMaxHpFunc, setNowHpFunc, onChangeName }) => (
+	= ({ armor, maxHp, name, nowHp, setArmorFunc, setMaxHpFunc,
+		setNowHpFunc, onChangeName, onAddButton }) => (
 		<Form className="border p-3">
 			<Form.Group controlId="param">
 				<InputWithSlider label="最大耐久" min={Math.max(1, nowHp)} max={200} initialValue={maxHp} setFunc={setMaxHpFunc} />
@@ -37,7 +40,7 @@ const InputSetting: React.FC<InputSettingProps>
 					<Form.Control type='text' value={name} onChange={onChangeName} />
 				</div>
 			</Form.Group>
-			<Button type="button" className="w-100">追加</Button>
+			<Button type="button" className="w-100" onClick={onAddButton}>追加</Button>
 		</Form>
 	);
 
