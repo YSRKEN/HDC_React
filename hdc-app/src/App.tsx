@@ -116,6 +116,12 @@ const App: React.FC = () => {
 
   const addParam = () => {
     const param1 = getParam({});
+    if (paramList.map(p => p.name).includes(param1.name)) {
+      return;
+    }
+    if (paramList.map(p => `${p.maxHp}-${p.armor}-${p.nowHp}`).includes(`${param1.maxHp}-${param1.armor}-${param1.nowHp}`)) {
+      return;
+    }
     const newParamList = [...paramList, param1];
     setParamList(newParamList);
     saveSettingString('paramList', JSON.stringify(newParamList));
