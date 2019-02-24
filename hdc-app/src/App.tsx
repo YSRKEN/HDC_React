@@ -5,6 +5,7 @@ import './App.css';
 import { loadSettingInteger, loadSettingString, saveSettingNumber, saveSettingString } from './data_store';
 import InputSetting from './InputSetting';
 import OutputGraph from './OutputGraph';
+import OutputList from './OutputList';
 
 export interface IGraphParam {
   maxHp: number;
@@ -80,6 +81,7 @@ const App: React.FC = () => {
               setArmorFunc={setArmorFunc} setMaxHpFunc={setMaxHpFunc}
               setNowHpFunc={setNowHpFunc} onChangeName={onChangeName} />
             <OutputGraph params={tempParamList} />
+            <OutputList params={paramList} />
           </Col>
         </Row>
       </Container>
