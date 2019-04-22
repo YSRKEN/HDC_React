@@ -5,6 +5,7 @@ import { BsPrefixProps, ReplaceProps } from 'react-bootstrap/helpers';
 import { calcMinStopperPower, calcPlotData } from './algorithm';
 import './App.css';
 import { loadSettingInteger, loadSettingString, saveSettingNumber, saveSettingString } from './data_store';
+import FinalAttackSlider from './FinalAttackSlider';
 import InputSetting from './InputSetting';
 import OutputGraph from './OutputGraph';
 import OutputList from './OutputList';
@@ -88,8 +89,8 @@ const App: React.FC = () => {
 			rightXValue = Math.max(...paramListArgs
 				.filter(param => !ignoreNamesArgs.includes(param.name))
 				.map(param => calcMinStopperPower(param.armor, param.nowHp)));
-		}
-		return {
+    }
+    const datasets = {
 			datasets: paramListArgs.map((param, i) => ({
 				backgroundColor: Chart.helpers.color(CHART_COLORS[i]).alpha(0.2).rgbString(),
 				borderColor: CHART_COLORS[i],
@@ -98,7 +99,20 @@ const App: React.FC = () => {
 				label: param.name,
 				pointRadius: 0
 			}))
-		};
+    };
+    const minX = Math.min(...datasets.datasets.map(
+      data => Math.min(...data.data.map(
+        pair => pair.x
+      ))
+    ));
+    const maxX = Math.max(...datasets.datasets.map(
+      data => Math.max(...data.data.map(
+        pair => pair.x
+      ))
+    ));
+// tslint:disable-next-line: no-console
+    console.log(`${minX}-${maxX}`);
+    return datasets;
 	};
 
   const createNewName = (nameArgs: string, list: string[]) => {
@@ -168,6 +182,8 @@ const App: React.FC = () => {
   const [tempParamList, setTempParamList] = React.useState<IGraphParam[]>([...paramList, getParam({})]);
   const [ignoreNames, setIgnoreNames] = React.useState<string[]>([]);
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
+  const [minFinalAttack] = React.useState(0);
+  const [maxFinalAttack] = React.useState(200);
 
   return (
     <>
@@ -180,6 +196,7 @@ const App: React.FC = () => {
               setNowHpFunc={setNowHpFunc} onChangeName={onChangeName}
               onAddButton={addParam}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
+            <FinalAttackSlider initialValue={50} min={minFinalAttack} max={maxFinalAttack} />
             <OutputList params={paramList} deleteParam={deleteParam}/>
           </Col>
         </Row>
