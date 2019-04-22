@@ -30,10 +30,21 @@ const InputWithSlider: React.FC<InputWithSliderProps> = ({ label, initialValue, 
 		setFunc(sliderValue);
 	};
 
+	/**
+	 * テキストを編集した際の動き
+	 */
+	const onChangeText = (e: React.FormEvent<HTMLInputElement>) => {
+		if (typeof(e.currentTarget.value) === 'string') {
+			const sliderValue = parseInt(e.currentTarget.value, 10);
+			changeValue(sliderValue);
+			setFunc(sliderValue);
+		}
+	}
+
 	return (
 		<div className="d-flex my-1">
 			<label className="text-nowrap mt-1">{label}</label>
-			<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + value} readOnly={true} />
+			<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + value} onChange={onChangeText} />
 			<input type="range" className="custom-range mt-1" min={min} max={max} value={"" + value}
 				onChange={onChangeSlider} />
 		</div>
