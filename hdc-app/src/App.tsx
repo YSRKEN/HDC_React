@@ -100,18 +100,6 @@ const App: React.FC = () => {
 				pointRadius: 0
 			}))
     };
-    const minX = Math.min(...datasets.datasets.map(
-      data => Math.min(...data.data.map(
-        pair => pair.x
-      ))
-    ));
-    const maxX = Math.max(...datasets.datasets.map(
-      data => Math.max(...data.data.map(
-        pair => pair.x
-      ))
-    ));
-// tslint:disable-next-line: no-console
-    console.log(`${minX}-${maxX}`);
     return datasets;
 	};
 
@@ -181,9 +169,25 @@ const App: React.FC = () => {
   );
   const [tempParamList, setTempParamList] = React.useState<IGraphParam[]>([...paramList, getParam({})]);
   const [ignoreNames, setIgnoreNames] = React.useState<string[]>([]);
+  const [minFinalAttack, setMinFinalAttack] = React.useState(0);
+  const [maxFinalAttack, setMaxFinalAttack] = React.useState(200);
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
-  const [minFinalAttack] = React.useState(0);
-  const [maxFinalAttack] = React.useState(200);
+
+  React.useEffect(() => {
+    const temp: any = chartData.datasets;
+    const minX = Math.min(...temp.map(
+      (data: any) => Math.min(...data.data.map(
+        (pair: any) => pair.x
+      ))
+    ));
+    const maxX = Math.max(...temp.map(
+      (data: any) => Math.max(...data.data.map(
+        (pair: any) => pair.x
+      ))
+    ));
+    setMinFinalAttack(minX);
+    setMaxFinalAttack(maxX);
+  }, [chartData]);
 
   return (
     <>
