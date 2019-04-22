@@ -159,10 +159,34 @@ const App: React.FC = () => {
     }
   };
 
+  const setFinalAttackFunc = (value: number) => {
+    setFinalAttack(value);
+    const temp: any = chartData.datasets;
+    const result = temp.map((data: any) => {
+      const plotData = data.data;
+      const plotDataLen = plotData.length;
+      if (plotData[0].x > value) {
+        return {'value': plotData[0].y, 'label': data.label};
+      } else if (plotData[plotDataLen - 1].x < value) {
+        return {'value': plotData[plotDataLen - 1].y, 'label': data.label};
+      } else {
+        return {'value': plotData.filter((pair: any) => pair.x === value).map((pair:any) => pair.y)[0], 'label': data.label};
+      }
+    });
+    // tslint:disable-next-line: no-console
+    console.log(result);
+    let logText = '';
+    for (const pair of result) {
+      logText += `${pair.label}：${pair.value}％\n`
+    }
+    setCursorLog(logText);
+  }
+
   // Hooksを設定した
   const [maxHp, setMaxHp] = React.useState(loadSettingInteger('maxHp', 35));
   const [armor, setArmor] = React.useState(loadSettingInteger('armor', 49));
   const [nowHp, setNowHp] = React.useState(loadSettingInteger('nowHp', 35));
+  const [finalAttack, setFinalAttack] = React.useState(50);
   const [name, setName] = React.useState(loadSettingString('name', '入力値'));
   const [paramList, setParamList] = React.useState<IGraphParam[]>(
     JSON.parse(loadSettingString('paramList', '[]'))
@@ -172,6 +196,7 @@ const App: React.FC = () => {
   const [minFinalAttack, setMinFinalAttack] = React.useState(0);
   const [maxFinalAttack, setMaxFinalAttack] = React.useState(200);
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
+  const [cursorLog, setCursorLog] = React.useState('');
 
   React.useEffect(() => {
     const temp: any = chartData.datasets;
@@ -200,7 +225,8 @@ const App: React.FC = () => {
               setNowHpFunc={setNowHpFunc} onChangeName={onChangeName}
               onAddButton={addParam}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
-            <FinalAttackSlider initialValue={50} min={minFinalAttack} max={maxFinalAttack} />
+            <FinalAttackSlider initialValue={finalAttack} min={minFinalAttack} max={maxFinalAttack}
+              setFinalAttackFunc={setFinalAttackFunc} cursorLog={cursorLog}/>
             <OutputList params={paramList} deleteParam={deleteParam}/>
           </Col>
         </Row>

@@ -7,9 +7,13 @@ interface ISliderProps {
 	min: number;
 	// 最大値
 	max: number;
+	// 設定値を変更した際の処理
+	setFinalAttackFunc: (value: number) => void;
+	// ログテキスト
+	cursorLog: string;
 }
 
-const FinalAttackSlider: React.FC<ISliderProps> = ({initialValue, min, max}) => {
+const FinalAttackSlider: React.FC<ISliderProps> = ({initialValue, min, max, setFinalAttackFunc, cursorLog}) => {
 	/* スライダーの値 */
 	const [value, changeValue] = React.useState(Math.max(Math.min(initialValue, max), min));
 
@@ -17,6 +21,7 @@ const FinalAttackSlider: React.FC<ISliderProps> = ({initialValue, min, max}) => 
 	const onChangeSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const sliderValue = parseInt(e.target.value, 10);
 		changeValue(sliderValue);
+		setFinalAttackFunc(sliderValue);
 	};
 
 	/**
@@ -30,12 +35,15 @@ const FinalAttackSlider: React.FC<ISliderProps> = ({initialValue, min, max}) => 
 	}
 
 	return (
-		<div className="d-flex my-1">
-			<label className="text-nowrap mt-1">最終攻撃力</label>
-			<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + value} onChange={onChangeText} />
-			<input type="range" className="custom-range mt-1" min={min} max={max} value={"" + value}
-				onChange={onChangeSlider} />
-		</div>
+		<>
+			<div className="d-flex my-1">
+				<label className="text-nowrap mt-1">最終攻撃力</label>
+				<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + value} onChange={onChangeText} />
+				<input type="range" className="custom-range mt-1" min={min} max={max} value={"" + value}
+					onChange={onChangeSlider} />
+			</div>
+			<pre className='border p-3'>{cursorLog}</pre>
+		</>
 	);
 };
 
