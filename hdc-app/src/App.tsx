@@ -5,10 +5,12 @@ import { BsPrefixProps, ReplaceProps } from 'react-bootstrap/helpers';
 import { calcMinStopperPower, calcPlotData } from './algorithm';
 import './App.css';
 import { loadSettingInteger, loadSettingString, saveSettingNumber, saveSettingString } from './data_store';
+import EnemySelector from './EnemySelector';
 import FinalAttackSlider from './FinalAttackSlider';
 import InputSetting from './InputSetting';
 import OutputGraph from './OutputGraph';
 import OutputList from './OutputList';
+import { readJson } from './rest-service';
 
 export interface IGraphParam {
   maxHp: number;
@@ -197,6 +199,7 @@ const App: React.FC = () => {
   const [maxFinalAttack, setMaxFinalAttack] = React.useState(200);
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
   const [cursorLog, setCursorLog] = React.useState('');
+  const [mapList, setMapList] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     const temp: any = chartData.datasets;
@@ -214,6 +217,12 @@ const App: React.FC = () => {
     setMaxFinalAttack(maxX);
   }, [chartData]);
 
+  React.useEffect(() => {
+    readJson('map-names').then(jsonData => {
+      setMapList(jsonData);
+    });
+  }, []);
+
   return (
     <>
       <Container className="my-3">
@@ -225,6 +234,7 @@ const App: React.FC = () => {
               setNowHpFunc={setNowHpFunc} onChangeName={onChangeName}
               onAddButton={addParam}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
+            <EnemySelector mapList={mapList}/>
             <FinalAttackSlider initialValue={finalAttack} min={minFinalAttack} max={maxFinalAttack}
               setFinalAttackFunc={setFinalAttackFunc} cursorLog={cursorLog}/>
             <OutputList params={paramList} deleteParam={deleteParam}/>
