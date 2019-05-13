@@ -200,6 +200,10 @@ const App: React.FC = () => {
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
   const [cursorLog, setCursorLog] = React.useState('');
   const [mapList, setMapList] = React.useState<string[]>([]);
+  const [mapName, setMapName] = React.useState('1-1');
+  const [positionList, setPositionList] = React.useState<string[]>([]);
+  const [positionName, setPositionName] = React.useState('A-1');
+  const [enemyList, setEnemyList] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     const temp: any = chartData.datasets;
@@ -223,6 +227,30 @@ const App: React.FC = () => {
     });
   }, []);
 
+  React.useEffect(() => {
+    readJson('map-positions', `map=${mapName}`).then(jsonData => {
+      setPositionList(jsonData);
+    });
+  }, [mapName]);
+
+  React.useEffect(() => {
+    readJson('enemy-names', `map=${mapName}&point=${positionName}&level=3`).then((jsonData: any) => {
+      // 敵名一覧を取得
+      const enemyListTemp: Array<{'name': string, 'id': number}> = jsonData.enemy;
+
+      // 重複している様を弾く
+      const enemyMap = new Map();
+      for (const enemy of enemyListTemp) {
+        const key = `${enemy.id}-${enemy.name}`;
+        enemyMap.set(key, enemy);
+      }
+      const enemyListTemp2: Array<{'name': string, 'id': number}> = Array.from(enemyMap.values());
+
+      // 名前だけ抽出して返す
+      setEnemyList(enemyListTemp2.map((fleet: any) => fleet.name));
+    });
+  }, [positionName]);
+
   return (
     <>
       <Container className="my-3">
@@ -234,7 +262,8 @@ const App: React.FC = () => {
               setNowHpFunc={setNowHpFunc} onChangeName={onChangeName}
               onAddButton={addParam}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
-            <EnemySelector mapList={mapList}/>
+            <EnemySelector mapList={mapList} setMapName={setMapName} positionList={positionList}
+              setPositionName={setPositionName} enemyList={enemyList}/>
             <FinalAttackSlider initialValue={finalAttack} min={minFinalAttack} max={maxFinalAttack}
               setFinalAttackFunc={setFinalAttackFunc} cursorLog={cursorLog}/>
             <OutputList params={paramList} deleteParam={deleteParam}/>
