@@ -184,6 +184,11 @@ const App: React.FC = () => {
     setCursorLog(logText);
   }
 
+  const calcFinalAttack = () => {
+// tslint:disable-next-line: no-console
+    console.log(`敵名=${enemyName}, 敵陣形=${enemyFormation}, 敵攻撃種=${enemyAttackName}`);
+  }
+
   // Hooksを設定した
   const [maxHp, setMaxHp] = React.useState(loadSettingInteger('maxHp', 35));
   const [armor, setArmor] = React.useState(loadSettingInteger('armor', 49));
@@ -204,6 +209,9 @@ const App: React.FC = () => {
   const [positionList, setPositionList] = React.useState<string[]>([]);
   const [positionName, setPositionName] = React.useState('A-1');
   const [enemyList, setEnemyList] = React.useState<string[]>([]);
+  const [enemyName, setEnemyName] = React.useState('駆逐イ級');
+  const [enemyFormation, setEnemyFormation] = React.useState('T有');
+  const [enemyAttackName, setEnemyAttackName] = React.useState('航空');
 
   React.useEffect(() => {
     const temp: any = chartData.datasets;
@@ -263,7 +271,9 @@ const App: React.FC = () => {
               onAddButton={addParam}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
             <EnemySelector mapList={mapList} setMapName={setMapName} positionList={positionList}
-              setPositionName={setPositionName} enemyList={enemyList}/>
+              setPositionName={setPositionName} enemyList={enemyList} setEnemyName={setEnemyName}
+              setEnemyFormation={setEnemyFormation} setEnemyAttackName={setEnemyAttackName}
+              calcFinalAttack={calcFinalAttack}/>
             <FinalAttackSlider initialValue={finalAttack} min={minFinalAttack} max={maxFinalAttack}
               setFinalAttackFunc={setFinalAttackFunc} cursorLog={cursorLog}/>
             <OutputList params={paramList} deleteParam={deleteParam}/>
