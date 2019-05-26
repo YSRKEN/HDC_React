@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Form, } from 'react-bootstrap';
 import { BsPrefixProps, ReplaceProps } from 'react-bootstrap/helpers';
-import InputWithSlider from './InputWithSlider';
+import InputWithSlider from './components/InputWithSlider';
 
 /**
  * 設定を入力するためのProps
@@ -32,9 +32,9 @@ const InputSetting: React.FC<InputSettingProps>
 		setNowHpFunc, onChangeName, onAddButton }) => (
 		<Form className="border p-3">
 			<Form.Group controlId="param">
-				<InputWithSlider label="最大耐久" min={Math.max(1, nowHp)} max={200} initialValue={maxHp} setFunc={setMaxHpFunc} />
-				<InputWithSlider label="艦娘装甲" min={0} max={200} initialValue={armor} setFunc={setArmorFunc} />
-				<InputWithSlider label="現在耐久" min={1} max={Math.min(200, maxHp)} initialValue={nowHp} setFunc={setNowHpFunc} />
+				<InputWithSlider label="最大耐久" min={Math.max(1, nowHp)} max={200} initialValue={maxHp} setValue={setMaxHpFunc} />
+				<InputWithSlider label="艦娘装甲" min={0} max={200} initialValue={armor} setValue={setArmorFunc} />
+				<InputWithSlider label="現在耐久" min={1} max={Math.min(200, maxHp)} initialValue={nowHp} setValue={setNowHpFunc} />
 				<div className="d-flex my-1">
 					<Form.Label className="mr-3 text-nowrap mt-2">設定名</Form.Label>
 					<Form.Control type='text' value={name} onChange={onChangeName} />

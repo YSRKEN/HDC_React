@@ -4,7 +4,8 @@ import { Button, Form } from 'react-bootstrap';
 const FORMATION_LIST = ['T有', '同航', '反航', 'T不'];
 const ATTACK_TYPE_LIST = ['航空', '砲撃', '対潜', '雷撃', '夜戦'];
 
-interface IEnemySelector {
+// tslint:disable-next-line: interface-name
+interface EnemySelectorProps {
 	mapList: string[]
 	positionList: string[]
 	enemyList: string[]
@@ -16,7 +17,7 @@ interface IEnemySelector {
 	onClickButton: () => void
 }
 
-const EnemySelector: React.FC<IEnemySelector> = ({
+const EnemySelector: React.FC<EnemySelectorProps> = ({
 	mapList, positionList, enemyList, disabled, setMapName, setPosition, setEnemyName, setDisabled, onClickButton
 }) => {
 	/* 「仮想敵を選択」チェックを押した際の動き */

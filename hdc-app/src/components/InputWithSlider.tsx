@@ -5,21 +5,21 @@ import * as React from 'react';
  */
 interface InputWithSliderProps {
 	// 表示ラベルの文字列
-	label: string;
+	label: string
 	// 初期値
-	initialValue: number;
+	initialValue: number
 	// 最小値
-	min: number;
+	min: number
 	// 最大値
-	max: number;
+	max: number
 	// 設定用関数
-	setFunc: (value: number) => void;
+	setValue: (value: number) => void
 }
 
 /**
  * 自作スライダー
  */
-const InputWithSlider: React.FC<InputWithSliderProps> = ({ label, initialValue, min, max, setFunc }) => {
+const InputWithSlider: React.FC<InputWithSliderProps> = ({ label, initialValue, min, max, setValue }) => {
 	/* スライダーの値 */
 	const [value, changeValue] = React.useState(initialValue);
 
@@ -27,28 +27,29 @@ const InputWithSlider: React.FC<InputWithSliderProps> = ({ label, initialValue, 
 	const onChangeSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const sliderValue = parseInt(e.target.value, 10);
 		changeValue(sliderValue);
-		setFunc(sliderValue);
+		setValue(sliderValue);
 	};
 
 	/**
 	 * テキストを編集した際の動き
 	 */
 	const onChangeText = (e: React.FormEvent<HTMLInputElement>) => {
-		if (typeof(e.currentTarget.value) === 'string') {
-			const sliderValue = parseInt(e.currentTarget.value, 10);
-			changeValue(sliderValue);
-			setFunc(sliderValue);
+		if (typeof(e.currentTarget.value) !== 'string') {
+			return;
 		}
+		const sliderValue = parseInt(e.currentTarget.value, 10);
+		changeValue(sliderValue);
+		setValue(sliderValue);
 	}
 
 	return (
 		<div className="d-flex my-1">
 			<label className="text-nowrap mt-1">{label}</label>
-			<input type="text" className="mx-2 px-1 col-2 col-md-1" value={"" + value} onChange={onChangeText} />
-			<input type="range" className="custom-range mt-1" min={min} max={max} value={"" + value}
+			<input type="text" className="mx-2 px-1 col-2 col-md-1" value={value.toString()} onChange={onChangeText} />
+			<input type="range" className="custom-range mt-1" min={min} max={max} value={value.toString()}
 				onChange={onChangeSlider} />
 		</div>
 	);
 };
 
-export default InputWithSlider
+export default InputWithSlider;
