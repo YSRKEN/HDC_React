@@ -92,8 +92,9 @@ const App: React.FC = () => {
     const newParamList = [...paramList, param1];
     setParamList(newParamList);
     saveSettingString('paramList', JSON.stringify(newParamList));
-    const newName = createNewName(name, newParamList.map(p => p.name));
+    const newName = createNewName(graphName, newParamList.map(p => p.name));
     saveSettingString('name', newName);
+    setGraphName(newName);
     const param2 = getParam({graphName: newName});
     setTempParamList([...paramList, param1, param2]);
   };
@@ -115,8 +116,9 @@ const App: React.FC = () => {
       }
       setParamList(newParamList);
       saveSettingString('paramList', JSON.stringify(newParamList));
-      const newName = createNewName(name, newParamList.map(p => p.name));
+      const newName = createNewName(graphName, newParamList.map(p => p.name));
       saveSettingString('name', newName);
+      setGraphName(newName);
       const param2 = getParam({graphName: newName});
       const tempParamList2 = [...paramList, param2];
       setTempParamList(tempParamList2);
@@ -148,6 +150,8 @@ const App: React.FC = () => {
   }
 
   // Hooksを設定した
+	const [graphName, setGraphName] = React.useState(loadSettingString('name', '入力値'));
+
   const [finalAttack, setFinalAttack] = React.useState(50);
   const [paramList, setParamList] = React.useState<IGraphParam[]>(
     JSON.parse(loadSettingString('paramList', '[]'))
@@ -181,7 +185,8 @@ const App: React.FC = () => {
         <Row>
           <Col xs={12} md={6} className="mx-auto">
             <h1 className="text-center">艦娘大破率計算機</h1>
-            <InputSettingImpl redrawNowChartData={redrawNowChartData} addParam={addParam}/>
+            <InputSettingImpl redrawNowChartData={redrawNowChartData} addParam={addParam}
+              graphName={graphName} setGraphName={setGraphName}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
             <EnemySelectorImpl/>
             <FinalAttackSlider initialValue={finalAttack} min={minFinalAttack} max={maxFinalAttack}
