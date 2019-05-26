@@ -11,6 +11,7 @@ const EnemySelectorImpl: React.FC = () => {
 	const [enemyName, setEnemyName] = React.useState('駆逐イ級');
 	const [enemyList, setEnemyList] = React.useState(['駆逐イ級']);
 	const [disabled, setDisabled] = React.useState(true);
+	const [selectorEnabled, setSelectorEnabled] = React.useState(false);
 
 	/**
 	 * 初期化時の処理
@@ -62,9 +63,9 @@ const EnemySelectorImpl: React.FC = () => {
 	 * 仮想DOMを返却する
 	 */
 	return (<EnemySelector mapList={mapList} positionList={positionList}
-		enemyList={enemyList} disabled={disabled}
+		enemyList={enemyList} disabled={disabled} selectorEnabled={selectorEnabled}
 		setMapName={setMapName} setPosition={setPosition} setEnemyName={setEnemyName}
-		setDisabled={setDisabled} onClickButton={debug}/>);
+		setDisabled={setDisabled} setSelectorEnabled={setSelectorEnabled} onClickButton={debug}/>);
 }
 
 export default EnemySelectorImpl;

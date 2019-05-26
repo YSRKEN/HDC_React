@@ -10,19 +10,22 @@ interface EnemySelectorProps {
 	positionList: string[]
 	enemyList: string[]
 	disabled: boolean
+	selectorEnabled: boolean
 	setMapName: (value: string) => void
 	setPosition: (value: string) => void
 	setEnemyName: (value: string) => void
 	setDisabled: (value: boolean) => void
+	setSelectorEnabled: (value: boolean) => void
 	onClickButton: () => void
 }
 
 const EnemySelector: React.FC<EnemySelectorProps> = ({
-	mapList, positionList, enemyList, disabled, setMapName, setPosition, setEnemyName, setDisabled, onClickButton
+	mapList, positionList, enemyList, disabled, selectorEnabled, setMapName,
+	setPosition, setEnemyName, setDisabled, onClickButton, setSelectorEnabled
 }) => {
 	/* 「仮想敵を選択」チェックを押した際の動き */
 	const onChangeCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setDisabled(!e.target.checked);
+		setSelectorEnabled(e.target.checked);
 	};
 
 	/* マップを選択した際の動き */
@@ -40,29 +43,31 @@ const EnemySelector: React.FC<EnemySelectorProps> = ({
 		setEnemyName(e.currentTarget.value);
 	};
 
+	const isFormDisable = () => !selectorEnabled || disabled;
+
 	return (
 		<Form.Group className='d-flex'>
 			<Form.Check className='text-nowrap mt-1 mr-3' type='checkbox' label='仮想敵を選択'
 				onChange={onChangeCheck}/>
-			<Form.Control as='select' disabled={disabled} style={{'width': 'auto'}} className='mr-1'
+			<Form.Control as='select' disabled={isFormDisable()} style={{'width': 'auto'}} className='mr-1'
 				onChange={onChangeMap}>
 				{mapList.map(mapName => (<option key={mapName}>{mapName}</option>))}
 			</Form.Control>
-			<Form.Control as='select' disabled={disabled} style={{'width': 'auto'}} className='mr-1'
+			<Form.Control as='select' disabled={isFormDisable()} style={{'width': 'auto'}} className='mr-1'
 				onChange={onChangePosition}>
 				{positionList.map(position => (<option key={position}>{position}</option>))}
 			</Form.Control>
-			<Form.Control as='select' disabled={disabled} style={{'width': 'auto'}} className='mr-1'
+			<Form.Control as='select' disabled={isFormDisable()} style={{'width': 'auto'}} className='mr-1'
 				onChange={onChangeEnemy}>
 				{enemyList.map(enemyName => (<option key={enemyName}>{enemyName}</option>))}
 			</Form.Control>
-			<Form.Control as='select' disabled={disabled} style={{'width': 'auto'}} className='mr-1'>
+			<Form.Control as='select' disabled={isFormDisable()} style={{'width': 'auto'}} className='mr-1'>
 				{FORMATION_LIST.map(formation => (<option key={formation}>{formation}</option>))}
 			</Form.Control>
-			<Form.Control as='select' disabled={disabled} style={{'width': 'auto'}} className='mr-1'>
+			<Form.Control as='select' disabled={isFormDisable()} style={{'width': 'auto'}} className='mr-1'>
 				{ATTACK_TYPE_LIST.map(attackType => (<option key={attackType}>{attackType}</option>))}
 			</Form.Control>
-			<Button className='text-nowrap' onClick={onClickButton} disabled={disabled}>反映</Button>
+			<Button className='text-nowrap' onClick={onClickButton} disabled={isFormDisable()}>反映</Button>
 		</Form.Group>
 	);
 };
