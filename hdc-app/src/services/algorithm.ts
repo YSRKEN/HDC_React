@@ -17,7 +17,7 @@ interface IPoint {
 }
 
 // カスダメ時の大破率を算出する
-const calcVerylightDamageProb = (nowHp: number, heavyDamageHp: number) => {
+const calcVerylightDamageProb = (nowHp: number, heavyDamageHp: number): number => {
   // 大破した回数をカウントする
   let count = 0;
   for (let hi = 0; hi < nowHp; ++hi) {
@@ -38,7 +38,7 @@ const calcVerylightDamageProb = (nowHp: number, heavyDamageHp: number) => {
 }
 
 // 轟沈ストッパー時の大破率を算出する
-const calcStopperDamageProb = (nowHp: number, heavyDamageHp: number) => {
+const calcStopperDamageProb = (nowHp: number, heavyDamageHp: number): number => {
   // 大破した回数をカウントする
   let count = 0;
   for (let hi = 0; hi < nowHp; ++hi) {
@@ -59,12 +59,12 @@ const calcStopperDamageProb = (nowHp: number, heavyDamageHp: number) => {
 }
 
 // 確実に轟沈ストッパーが掛かる最小の最終攻撃力を計算する
-export const calcMinStopperPower = (armor: number, nowHp: number) => {
+export const calcMinStopperPower = (armor: number, nowHp: number): number => {
   return nowHp + Math.ceil((armor * MIN_ARMOR_PER + (armor - 1) * RANGE_ARMOR_PER) / 100.0);
 }
 
 // プロット用データを計算する
-export const calcPlotData = (maxHp: number, armor: number, nowHp: number, rightXValue?: number) => {
+export const calcPlotData = (maxHp: number, armor: number, nowHp: number, rightXValue?: number): IPoint[] => {
   // 確実にカスダメとなる最大の最終攻撃力
   const maxVeryLightPower = Math.ceil(armor * MIN_ARMOR_PER / 100.0);
 

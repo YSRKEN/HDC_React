@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { loadSettingInteger, saveSettingNumber, saveSettingString } from 'src/data_store';
+import { loadSettingInteger, saveSettingNumber, saveSettingString } from 'src/services/local_storage';
 import InputSetting from '../components/InputSetting';
 
 const InputSettingImpl: React.FC<{redrawNowChartData: () => void, addParam: () => void,

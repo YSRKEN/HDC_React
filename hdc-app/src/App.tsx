@@ -1,14 +1,14 @@
 import * as Chart from 'chart.js';
 import * as React from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
-import { calcMinStopperPower, calcPlotData } from './algorithm';
 import './App.css';
 import EnemySelectorImpl from './containers/EnemySelectorImpl';
 import InputSettingImpl from './containers/InputSettingImpl';
-import { loadSettingInteger, loadSettingString, saveSettingString } from './data_store';
 import FinalAttackSlider from './FinalAttackSlider';
 import OutputGraph from './OutputGraph';
 import OutputList from './OutputList';
+import { calcMinStopperPower, calcPlotData } from './services/algorithm';
+import { loadSettingInteger, loadSettingString, saveSettingString } from './services/local_storage';
 
 export interface IGraphParam {
   maxHp: number;
