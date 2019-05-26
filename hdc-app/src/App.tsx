@@ -10,7 +10,7 @@ import FinalAttackSlider from './FinalAttackSlider';
 import InputSetting from './InputSetting';
 import OutputGraph from './OutputGraph';
 import OutputList from './OutputList';
-import { readJson } from './rest-service';
+import { getEnemyNames, getMapNames, getMapPositions } from './services/rest';
 
 export interface IGraphParam {
   maxHp: number;
@@ -230,32 +230,20 @@ const App: React.FC = () => {
   }, [chartData]);
 
   React.useEffect(() => {
-    readJson('map-names').then(jsonData => {
-      setMapList(jsonData);
+    getMapNames().then(mapNames => {
+      setMapList(mapNames);
     });
   }, []);
 
   React.useEffect(() => {
-    readJson('map-positions', `map=${mapName}`).then(jsonData => {
-      setPositionList(jsonData);
+    getMapPositions(mapName).then(mapPositions => {
+      setPositionList(mapPositions);
     });
   }, [mapName]);
 
   React.useEffect(() => {
-    readJson('enemy-names', `map=${mapName}&point=${positionName}&level=3`).then((jsonData: any) => {
-      // 敵名一覧を取得
-      const enemyListTemp: Array<{'name': string, 'id': number}> = jsonData.enemy;
-
-      // 重複している様を弾く
-      const enemyMap = new Map();
-      for (const enemy of enemyListTemp) {
-        const key = `${enemy.id}-${enemy.name}`;
-        enemyMap.set(key, enemy);
-      }
-      const enemyListTemp2: Array<{'name': string, 'id': number}> = Array.from(enemyMap.values());
-
-      // 名前だけ抽出して返す
-      setEnemyList(enemyListTemp2.map((fleet: any) => fleet.name));
+    getEnemyNames(mapName, positionName).then(enemyNames => {
+      setEnemyList(enemyNames);
     });
   }, [positionName]);
 
