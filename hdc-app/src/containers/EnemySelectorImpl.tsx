@@ -3,6 +3,7 @@ import EnemySelector from '../components/EnemySelector';
 import { getEnemyNames, getMapNames, getMapPositions } from '../services/rest';
 
 const EnemySelectorImpl: React.FC = () => {
+	// 入力する設定項目に関するstate
 	const [mapName, setMapName] = React.useState('1-1');
 	const [mapList, setMapList] = React.useState(['1-1']);
 	const [position, setPosition] = React.useState('A-1');
@@ -11,6 +12,9 @@ const EnemySelectorImpl: React.FC = () => {
 	const [enemyList, setEnemyList] = React.useState(['駆逐イ級']);
 	const [disabled, setDisabled] = React.useState(true);
 
+	/**
+	 * 初期化時の処理
+	 */
 	React.useEffect(() => {
 		setDisabled(true);
 		getMapNames().then(mapNames => {
@@ -19,6 +23,9 @@ const EnemySelectorImpl: React.FC = () => {
 		});
 	}, []);
 	
+	/**
+	 * マップ名が変わった際の処理
+	 */
 	React.useEffect(() => {
 		setDisabled(true);
 		getMapPositions(mapName).then(mapPositions => {
@@ -30,6 +37,9 @@ const EnemySelectorImpl: React.FC = () => {
 		});
 	}, [mapName]);
 	
+	/**
+	 * 位置が変わった際の処理
+	 */
 	React.useEffect(() => {
 		setDisabled(true);
 		getEnemyNames(mapName, position).then(enemyNames => {
@@ -41,10 +51,16 @@ const EnemySelectorImpl: React.FC = () => {
 		});
 	}, [position]);
 
+	/**
+	 * デバッグ表示用の処理
+	 */
 	const debug = () => {
 		window.alert(`敵名=${enemyName}`);
 	}
 
+	/**
+	 * 仮想DOMを返却する
+	 */
 	return (<EnemySelector mapList={mapList} positionList={positionList}
 		enemyList={enemyList} disabled={disabled}
 		setMapName={setMapName} setPosition={setPosition} setEnemyName={setEnemyName}
