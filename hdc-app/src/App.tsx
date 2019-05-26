@@ -4,13 +4,12 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { BsPrefixProps, ReplaceProps } from 'react-bootstrap/helpers';
 import { calcMinStopperPower, calcPlotData } from './algorithm';
 import './App.css';
+import EnemySelectorImpl from './containers/EnemySelectorImpl';
 import { loadSettingInteger, loadSettingString, saveSettingNumber, saveSettingString } from './data_store';
-import EnemySelector from './EnemySelector';
 import FinalAttackSlider from './FinalAttackSlider';
 import InputSetting from './InputSetting';
 import OutputGraph from './OutputGraph';
 import OutputList from './OutputList';
-import { getEnemyNames, getMapNames, getMapPositions } from './services/rest';
 
 export interface IGraphParam {
   maxHp: number;
@@ -184,11 +183,6 @@ const App: React.FC = () => {
     setCursorLog(logText);
   }
 
-  const calcFinalAttack = () => {
-// tslint:disable-next-line: no-console
-    console.log(`敵名=${enemyName}, 敵陣形=${enemyFormation}, 敵攻撃種=${enemyAttackName}`);
-  }
-
   // Hooksを設定した
   const [maxHp, setMaxHp] = React.useState(loadSettingInteger('maxHp', 35));
   const [armor, setArmor] = React.useState(loadSettingInteger('armor', 49));
@@ -204,14 +198,6 @@ const App: React.FC = () => {
   const [maxFinalAttack, setMaxFinalAttack] = React.useState(200);
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
   const [cursorLog, setCursorLog] = React.useState('');
-  const [mapList, setMapList] = React.useState<string[]>([]);
-  const [mapName, setMapName] = React.useState('1-1');
-  const [positionList, setPositionList] = React.useState<string[]>([]);
-  const [positionName, setPositionName] = React.useState('A-1');
-  const [enemyList, setEnemyList] = React.useState<string[]>([]);
-  const [enemyName, setEnemyName] = React.useState('駆逐イ級');
-  const [enemyFormation, setEnemyFormation] = React.useState('T有');
-  const [enemyAttackName, setEnemyAttackName] = React.useState('航空');
 
   React.useEffect(() => {
     const temp: any = chartData.datasets;
@@ -229,24 +215,6 @@ const App: React.FC = () => {
     setMaxFinalAttack(maxX);
   }, [chartData]);
 
-  React.useEffect(() => {
-    getMapNames().then(mapNames => {
-      setMapList(mapNames);
-    });
-  }, []);
-
-  React.useEffect(() => {
-    getMapPositions(mapName).then(mapPositions => {
-      setPositionList(mapPositions);
-    });
-  }, [mapName]);
-
-  React.useEffect(() => {
-    getEnemyNames(mapName, positionName).then(enemyNames => {
-      setEnemyList(enemyNames);
-    });
-  }, [positionName]);
-
   return (
     <>
       <Container className="my-3">
@@ -258,10 +226,7 @@ const App: React.FC = () => {
               setNowHpFunc={setNowHpFunc} onChangeName={onChangeName}
               onAddButton={addParam}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
-            <EnemySelector mapList={mapList} setMapName={setMapName} positionList={positionList}
-              setPositionName={setPositionName} enemyList={enemyList} setEnemyName={setEnemyName}
-              setEnemyFormation={setEnemyFormation} setEnemyAttackName={setEnemyAttackName}
-              calcFinalAttack={calcFinalAttack}/>
+            <EnemySelectorImpl/>
             <FinalAttackSlider initialValue={finalAttack} min={minFinalAttack} max={maxFinalAttack}
               setFinalAttackFunc={setFinalAttackFunc} cursorLog={cursorLog}/>
             <OutputList params={paramList} deleteParam={deleteParam}/>
