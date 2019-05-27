@@ -2,8 +2,8 @@ import * as Chart from 'chart.js';
 import * as React from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import './App.css';
-import FinalAttackSlider from './components/FinalAttackSlider';
 import EnemySelectorImpl from './containers/EnemySelectorImpl';
+import FinalAttackSliderImpl from './containers/FinalAttackSliderImpl';
 import InputSettingImpl from './containers/InputSettingImpl';
 import OutputGraph from './OutputGraph';
 import OutputList from './OutputList';
@@ -126,9 +126,13 @@ const App: React.FC = () => {
     }
   };
 
-  const setFinalAttackFunc = (value: number) => {
-    setFinalAttack(value);
-    const temp: any = chartData.datasets;
+  /**
+   * カーソル(value)を合わせた位置の大破率のテキストを生成する
+   * @param value カーソル値
+   * @param chart グラフ情報
+   */
+  const calcLogText = (value: number, chart: Chart.ChartData): string => {
+    const temp: any = chart.datasets;
     const result = temp.map((data: any) => {
       const plotData = data.data;
       const plotDataLen = plotData.length;
@@ -140,19 +144,21 @@ const App: React.FC = () => {
         return {'value': plotData.filter((pair: any) => pair.x === value).map((pair:any) => pair.y)[0], 'label': data.label};
       }
     });
-    // tslint:disable-next-line: no-console
-    console.log(result);
     let logText = '';
     for (const pair of result) {
       logText += `${pair.label}：${pair.value}％\n`
     }
-    setCursorLog(logText);
+    return logText;
   }
+
+  /**
+   * カーソル(value)を合わせた位置の大破率のテキストを生成する
+   * @param value カーソル値
+   */
+  const calcLogTextImpl = (value: number): string => calcLogText(value, chartData);
 
   // Hooksを設定した
 	const [graphName, setGraphName] = React.useState(loadSettingString('name', '入力値'));
-
-  const [finalAttack, setFinalAttack] = React.useState(50);
   const [paramList, setParamList] = React.useState<IGraphParam[]>(
     JSON.parse(loadSettingString('paramList', '[]'))
   );
@@ -161,7 +167,6 @@ const App: React.FC = () => {
   const [minFinalAttack, setMinFinalAttack] = React.useState(0);
   const [maxFinalAttack, setMaxFinalAttack] = React.useState(200);
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
-  const [cursorLog, setCursorLog] = React.useState('');
 
   React.useEffect(() => {
     const temp: any = chartData.datasets;
@@ -189,8 +194,7 @@ const App: React.FC = () => {
               graphName={graphName} setGraphName={setGraphName}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
             <EnemySelectorImpl/>
-            <FinalAttackSlider value={finalAttack} min={minFinalAttack} max={maxFinalAttack}
-              setValueFunc={setFinalAttackFunc} cursorLog={cursorLog}/>
+            <FinalAttackSliderImpl min={minFinalAttack} max={maxFinalAttack} calcLogText={calcLogTextImpl}/>
             <OutputList params={paramList} deleteParam={deleteParam}/>
           </Col>
         </Row>
