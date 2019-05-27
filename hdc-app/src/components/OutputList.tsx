@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IGraphParam } from './App';
+import { IGraphParam } from '../App';
 
 const OutputList: React.FC<{params: IGraphParam[], deleteParam: ((value: string) => void)}> = ({params, deleteParam}) => {
 	const onclick = (value: string) => {

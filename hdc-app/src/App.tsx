@@ -2,11 +2,11 @@ import * as Chart from 'chart.js';
 import * as React from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import './App.css';
+import OutputGraph from './components/OutputGraph';
+import OutputList from './components/OutputList';
 import EnemySelectorImpl from './containers/EnemySelectorImpl';
 import FinalAttackSliderImpl from './containers/FinalAttackSliderImpl';
 import InputSettingImpl from './containers/InputSettingImpl';
-import OutputGraph from './OutputGraph';
-import OutputList from './OutputList';
 import { calcMinStopperPower, calcPlotData } from './services/algorithm';
 import { loadSettingInteger, loadSettingString, saveSettingString } from './services/local_storage';
 
