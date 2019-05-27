@@ -2,9 +2,9 @@ import * as Chart from 'chart.js';
 import * as React from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import './App.css';
+import FinalAttackSlider from './components/FinalAttackSlider';
 import EnemySelectorImpl from './containers/EnemySelectorImpl';
 import InputSettingImpl from './containers/InputSettingImpl';
-import FinalAttackSlider from './FinalAttackSlider';
 import OutputGraph from './OutputGraph';
 import OutputList from './OutputList';
 import { calcMinStopperPower, calcPlotData } from './services/algorithm';
@@ -189,8 +189,8 @@ const App: React.FC = () => {
               graphName={graphName} setGraphName={setGraphName}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
             <EnemySelectorImpl/>
-            <FinalAttackSlider initialValue={finalAttack} min={minFinalAttack} max={maxFinalAttack}
-              setFinalAttackFunc={setFinalAttackFunc} cursorLog={cursorLog}/>
+            <FinalAttackSlider value={finalAttack} min={minFinalAttack} max={maxFinalAttack}
+              setValueFunc={setFinalAttackFunc} cursorLog={cursorLog}/>
             <OutputList params={paramList} deleteParam={deleteParam}/>
           </Col>
         </Row>
