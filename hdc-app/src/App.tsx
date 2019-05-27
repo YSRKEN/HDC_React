@@ -1,16 +1,14 @@
 import * as Chart from 'chart.js';
 import * as React from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
-import { BsPrefixProps, ReplaceProps } from 'react-bootstrap/helpers';
-import { calcMinStopperPower, calcPlotData } from './algorithm';
 import './App.css';
-import { loadSettingInteger, loadSettingString, saveSettingNumber, saveSettingString } from './data_store';
-import EnemySelector from './EnemySelector';
-import FinalAttackSlider from './FinalAttackSlider';
-import InputSetting from './InputSetting';
-import OutputGraph from './OutputGraph';
-import OutputList from './OutputList';
-import { readJson } from './rest-service';
+import OutputGraph from './components/OutputGraph';
+import OutputList from './components/OutputList';
+import EnemySelectorImpl from './containers/EnemySelectorImpl';
+import FinalAttackSliderImpl from './containers/FinalAttackSliderImpl';
+import InputSettingImpl from './containers/InputSettingImpl';
+import { calcMinStopperPower, calcPlotData } from './services/algorithm';
+import { loadSettingInteger, loadSettingString, saveSettingString } from './services/local_storage';
 
 export interface IGraphParam {
   maxHp: number;
@@ -35,55 +33,20 @@ export const CHART_COLORS = [
  * アプリケーション全体
  */
 const App: React.FC = () => {
-  // 使用する関数を作成した
-  const setMaxHpFunc = (value: number) => {
-    setMaxHp(value);
-    saveSettingNumber('maxHp', value);
-    const tempParamList2 = [...paramList, getParam({maxHp: value})];
-    setTempParamList(tempParamList2);
-    setChartData(createGraphData(tempParamList2, ignoreNames));
-  };
+  const redrawNowChartData= () => {
+    const tempParamList2 = [...paramList, getParam({})];
+		setTempParamList(tempParamList2);
+		setChartData(createGraphData(tempParamList2, ignoreNames));
+  }
 
-  const setArmorFunc = (value: number) => {
-    setArmor(value);
-    saveSettingNumber('armor', value);
-    const tempParamList2 = [...paramList, getParam({armor: value})];
-    setTempParamList(tempParamList2);
-    setChartData(createGraphData(tempParamList2, ignoreNames));
-  };
-
-  const setNowHpFunc = (value: number) => {
-    setNowHp(value);
-    saveSettingNumber('nowHp', value);
-    const tempParamList2 = [...paramList, getParam({nowHp: value})];
-    setTempParamList(tempParamList2);
-    setChartData(createGraphData(tempParamList2, ignoreNames));
-  };
-
-  const onChangeName = (e: React.ChangeEvent<ReplaceProps<"input", BsPrefixProps<"input">>>) => {
-    const nameValue = e.target.value;
-    if (typeof (nameValue) === "string") {
-      setName(nameValue);
-      saveSettingString('name', nameValue);
-      const tempParamList2 = [...paramList, getParam({name: nameValue})];
-      setTempParamList(tempParamList2);
-      setChartData(createGraphData(tempParamList2, ignoreNames));
-    }
-  };
-
-  const getParam = (args: {paramList?:IGraphParam[], maxHp?: number, armor?: number,
-    nowHp?: number, name?: string}): IGraphParam => {
-    const armor2 = args.armor === undefined ? armor : args.armor;
-    const maxHp2 = args.maxHp === undefined ? maxHp : args.maxHp;
-    const name2 = args.name === undefined ? name : args.name;
-    const nowHp2 = args.nowHp === undefined ? nowHp : args.nowHp;
+  const getParam = (arg: {armor?: number, maxHp?: number, graphName?: string, nowHp?: number}): IGraphParam => {
     return {
-      "armor": armor2,
-      "maxHp": maxHp2,
-      "name": name2,
-      "nowHp": nowHp2,
+      "armor": arg.armor ? arg.armor : loadSettingInteger('armor', 49),
+      "maxHp": arg.maxHp ? arg.maxHp : loadSettingInteger('maxHp', 35),
+      "name": arg.graphName ? arg.graphName : loadSettingString('name', '入力値'),
+      "nowHp": arg.nowHp ? arg.nowHp : loadSettingInteger('nowHp', 35),
     };
-  };
+  }
 
 	const createGraphData = (paramListArgs: IGraphParam[], ignoreNamesArgs: string[]) => {
 		let rightXValue = 200;
@@ -129,9 +92,10 @@ const App: React.FC = () => {
     const newParamList = [...paramList, param1];
     setParamList(newParamList);
     saveSettingString('paramList', JSON.stringify(newParamList));
-    const newName = createNewName(name, newParamList.map(p => p.name));
-    setName(newName);
-    const param2 = getParam({name: newName});
+    const newName = createNewName(graphName, newParamList.map(p => p.name));
+    saveSettingString('name', newName);
+    setGraphName(newName);
+    const param2 = getParam({graphName: newName});
     setTempParamList([...paramList, param1, param2]);
   };
 
@@ -152,18 +116,23 @@ const App: React.FC = () => {
       }
       setParamList(newParamList);
       saveSettingString('paramList', JSON.stringify(newParamList));
-      const newName = createNewName(name, newParamList.map(p => p.name));
-      setName(newName);
-      const param2 = getParam({name: newName});
+      const newName = createNewName(graphName, newParamList.map(p => p.name));
+      saveSettingString('name', newName);
+      setGraphName(newName);
+      const param2 = getParam({graphName: newName});
       const tempParamList2 = [...paramList, param2];
       setTempParamList(tempParamList2);
       setChartData(createGraphData(tempParamList2, ignoreNames));
     }
   };
 
-  const setFinalAttackFunc = (value: number) => {
-    setFinalAttack(value);
-    const temp: any = chartData.datasets;
+  /**
+   * カーソル(value)を合わせた位置の大破率のテキストを生成する
+   * @param value カーソル値
+   * @param chart グラフ情報
+   */
+  const calcLogText = (value: number, chart: Chart.ChartData): string => {
+    const temp: any = chart.datasets;
     const result = temp.map((data: any) => {
       const plotData = data.data;
       const plotDataLen = plotData.length;
@@ -175,26 +144,21 @@ const App: React.FC = () => {
         return {'value': plotData.filter((pair: any) => pair.x === value).map((pair:any) => pair.y)[0], 'label': data.label};
       }
     });
-    // tslint:disable-next-line: no-console
-    console.log(result);
     let logText = '';
     for (const pair of result) {
       logText += `${pair.label}：${pair.value}％\n`
     }
-    setCursorLog(logText);
+    return logText;
   }
 
-  const calcFinalAttack = () => {
-// tslint:disable-next-line: no-console
-    console.log(`敵名=${enemyName}, 敵陣形=${enemyFormation}, 敵攻撃種=${enemyAttackName}`);
-  }
+  /**
+   * カーソル(value)を合わせた位置の大破率のテキストを生成する
+   * @param value カーソル値
+   */
+  const calcLogTextImpl = (value: number): string => calcLogText(value, chartData);
 
   // Hooksを設定した
-  const [maxHp, setMaxHp] = React.useState(loadSettingInteger('maxHp', 35));
-  const [armor, setArmor] = React.useState(loadSettingInteger('armor', 49));
-  const [nowHp, setNowHp] = React.useState(loadSettingInteger('nowHp', 35));
-  const [finalAttack, setFinalAttack] = React.useState(50);
-  const [name, setName] = React.useState(loadSettingString('name', '入力値'));
+	const [graphName, setGraphName] = React.useState(loadSettingString('name', '入力値'));
   const [paramList, setParamList] = React.useState<IGraphParam[]>(
     JSON.parse(loadSettingString('paramList', '[]'))
   );
@@ -203,15 +167,6 @@ const App: React.FC = () => {
   const [minFinalAttack, setMinFinalAttack] = React.useState(0);
   const [maxFinalAttack, setMaxFinalAttack] = React.useState(200);
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
-  const [cursorLog, setCursorLog] = React.useState('');
-  const [mapList, setMapList] = React.useState<string[]>([]);
-  const [mapName, setMapName] = React.useState('1-1');
-  const [positionList, setPositionList] = React.useState<string[]>([]);
-  const [positionName, setPositionName] = React.useState('A-1');
-  const [enemyList, setEnemyList] = React.useState<string[]>([]);
-  const [enemyName, setEnemyName] = React.useState('駆逐イ級');
-  const [enemyFormation, setEnemyFormation] = React.useState('T有');
-  const [enemyAttackName, setEnemyAttackName] = React.useState('航空');
 
   React.useEffect(() => {
     const temp: any = chartData.datasets;
@@ -229,53 +184,17 @@ const App: React.FC = () => {
     setMaxFinalAttack(maxX);
   }, [chartData]);
 
-  React.useEffect(() => {
-    readJson('map-names').then(jsonData => {
-      setMapList(jsonData);
-    });
-  }, []);
-
-  React.useEffect(() => {
-    readJson('map-positions', `map=${mapName}`).then(jsonData => {
-      setPositionList(jsonData);
-    });
-  }, [mapName]);
-
-  React.useEffect(() => {
-    readJson('enemy-names', `map=${mapName}&point=${positionName}&level=3`).then((jsonData: any) => {
-      // 敵名一覧を取得
-      const enemyListTemp: Array<{'name': string, 'id': number}> = jsonData.enemy;
-
-      // 重複している様を弾く
-      const enemyMap = new Map();
-      for (const enemy of enemyListTemp) {
-        const key = `${enemy.id}-${enemy.name}`;
-        enemyMap.set(key, enemy);
-      }
-      const enemyListTemp2: Array<{'name': string, 'id': number}> = Array.from(enemyMap.values());
-
-      // 名前だけ抽出して返す
-      setEnemyList(enemyListTemp2.map((fleet: any) => fleet.name));
-    });
-  }, [positionName]);
-
   return (
     <>
       <Container className="my-3">
         <Row>
           <Col xs={12} md={6} className="mx-auto">
             <h1 className="text-center">艦娘大破率計算機</h1>
-            <InputSetting armor={armor} maxHp={maxHp} name={name} nowHp={nowHp}
-              setArmorFunc={setArmorFunc} setMaxHpFunc={setMaxHpFunc}
-              setNowHpFunc={setNowHpFunc} onChangeName={onChangeName}
-              onAddButton={addParam}/>
+            <InputSettingImpl redrawNowChartData={redrawNowChartData} addParam={addParam}
+              graphName={graphName} setGraphName={setGraphName}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
-            <EnemySelector mapList={mapList} setMapName={setMapName} positionList={positionList}
-              setPositionName={setPositionName} enemyList={enemyList} setEnemyName={setEnemyName}
-              setEnemyFormation={setEnemyFormation} setEnemyAttackName={setEnemyAttackName}
-              calcFinalAttack={calcFinalAttack}/>
-            <FinalAttackSlider initialValue={finalAttack} min={minFinalAttack} max={maxFinalAttack}
-              setFinalAttackFunc={setFinalAttackFunc} cursorLog={cursorLog}/>
+            <EnemySelectorImpl/>
+            <FinalAttackSliderImpl min={minFinalAttack} max={maxFinalAttack} calcLogText={calcLogTextImpl}/>
             <OutputList params={paramList} deleteParam={deleteParam}/>
           </Col>
         </Row>
