@@ -14,14 +14,13 @@ interface EnemySelectorProps {
 	setMapName: (value: string) => void
 	setPosition: (value: string) => void
 	setEnemyName: (value: string) => void
-	setDisabled: (value: boolean) => void
 	setSelectorEnabled: (value: boolean) => void
 	onClickButton: () => void
 }
 
 const EnemySelector: React.FC<EnemySelectorProps> = ({
 	mapList, positionList, enemyList, disabled, selectorEnabled, setMapName,
-	setPosition, setEnemyName, setDisabled, onClickButton, setSelectorEnabled
+	setPosition, setEnemyName, onClickButton, setSelectorEnabled
 }) => {
 	/* 「仮想敵を選択」チェックを押した際の動き */
 	const onChangeCheck = (e: React.ChangeEvent<HTMLInputElement>) => {

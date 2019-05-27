@@ -65,7 +65,7 @@ const EnemySelectorImpl: React.FC = () => {
 	return (<EnemySelector mapList={mapList} positionList={positionList}
 		enemyList={enemyList} disabled={disabled} selectorEnabled={selectorEnabled}
 		setMapName={setMapName} setPosition={setPosition} setEnemyName={setEnemyName}
-		setDisabled={setDisabled} setSelectorEnabled={setSelectorEnabled} onClickButton={debug}/>);
+		setSelectorEnabled={setSelectorEnabled} onClickButton={debug}/>);
 }
 
 export default EnemySelectorImpl;
