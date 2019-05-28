@@ -12,6 +12,9 @@ const EnemySelectorImpl: React.FC = () => {
 	const [enemyList, setEnemyList] = React.useState(['駆逐イ級']);
 	const [disabled, setDisabled] = React.useState(true);
 	const [selectorEnabled, setSelectorEnabled] = React.useState(false);
+	const [formation, setFormation] = React.useState('単縦');
+	const [status, setStatus] = React.useState('T有');
+	const [attackType, setAttackType] = React.useState('航空');
 
 	/**
 	 * 初期化時の処理
@@ -56,7 +59,7 @@ const EnemySelectorImpl: React.FC = () => {
 	 * デバッグ表示用の処理
 	 */
 	const debug = () => {
-		window.alert(`敵名=${enemyName}`);
+		window.alert(`敵名=${enemyName} 敵陣形=${formation} 交戦形態=${status} 攻撃種=${attackType}`);
 	}
 
 	/**
@@ -65,7 +68,8 @@ const EnemySelectorImpl: React.FC = () => {
 	return (<EnemySelector mapList={mapList} positionList={positionList}
 		enemyList={enemyList} disabled={disabled} selectorEnabled={selectorEnabled}
 		setMapName={setMapName} setPosition={setPosition} setEnemyName={setEnemyName}
-		setSelectorEnabled={setSelectorEnabled} onClickButton={debug}/>);
+		setSelectorEnabled={setSelectorEnabled} setFormation={setFormation}
+		setStatus={setStatus} setAttackType={setAttackType} onClickButton={debug}/>);
 }
 
 export default EnemySelectorImpl;
