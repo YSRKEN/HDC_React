@@ -1,6 +1,6 @@
 import * as React from 'react';
 import EnemySelector from '../components/EnemySelector';
-import { getEnemyNames, getMapNames, getMapPositions } from '../services/rest';
+import { getEnemyNames, getFinalAttack, getMapNames, getMapPositions } from '../services/rest';
 
 const EnemySelectorImpl: React.FC = () => {
 	// 入力する設定項目に関するstate
@@ -58,8 +58,11 @@ const EnemySelectorImpl: React.FC = () => {
 	/**
 	 * デバッグ表示用の処理
 	 */
-	const debug = () => {
-		window.alert(`敵名=${enemyName} 敵陣形=${formation} 交戦形態=${status} 攻撃種=${attackType}`);
+	const debug = async () => {
+// tslint:disable-next-line: no-console
+		console.log(`敵名=${enemyName} 敵陣形=${formation} 交戦形態=${status} 攻撃種=${attackType}`);
+// tslint:disable-next-line: no-console
+		console.log(await getFinalAttack(mapName, position, enemyName, formation, status, attackType));
 	}
 
 	/**
