@@ -1,5 +1,5 @@
-// const SERVER_URL = 'https://aerial-combat-service.appspot.com';
-const SERVER_URL = 'http://localhost:8080';
+const SERVER_URL = 'https://aerial-combat-service.appspot.com';
+// const SERVER_URL = 'http://localhost:8080';
 
 const readJson = <T>(endpoint: string, option?: string): Promise<T> => {
 	const url = option !== undefined ? `${SERVER_URL}/${endpoint}?${option}` : `${SERVER_URL}/${endpoint}`;
