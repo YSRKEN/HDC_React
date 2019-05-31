@@ -2,7 +2,7 @@ import * as React from 'react';
 import EnemySelector from '../components/EnemySelector';
 import { getEnemyNames, getFinalAttack, getMapNames, getMapPositions } from '../services/rest';
 
-const EnemySelectorImpl: React.FC = () => {
+const EnemySelectorImpl: React.FC<{setFinalAttack: (value: number) => void}> = ({setFinalAttack}) => {
 	// 入力する設定項目に関するstate
 	const [mapName, setMapName] = React.useState('1-1');
 	const [mapList, setMapList] = React.useState(['1-1']);
@@ -61,8 +61,10 @@ const EnemySelectorImpl: React.FC = () => {
 	const debug = async () => {
 // tslint:disable-next-line: no-console
 		console.log(`敵名=${enemyName} 敵陣形=${formation} 交戦形態=${status} 攻撃種=${attackType}`);
+		const newFinalAttack = await getFinalAttack(mapName, position, enemyName, formation, status, attackType);
 // tslint:disable-next-line: no-console
-		console.log(await getFinalAttack(mapName, position, enemyName, formation, status, attackType));
+		console.log(`最終攻撃力=${newFinalAttack}`);
+		setFinalAttack(newFinalAttack);
 	}
 
 	/**

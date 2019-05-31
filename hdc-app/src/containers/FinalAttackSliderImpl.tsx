@@ -7,21 +7,21 @@ interface SliderProps {
 	min: number;
 	// 最大値
 	max: number;
-	// カーソルの値からログテキストを生成する
-	calcLogText: (value: number) => string;
+	//
+	finalAttack: number;
+	//
+	setFinalAttack: (value: number) => void
+	//
+	cursorLog: string
 }
 
-const FinalAttackSliderImpl: React.FC<SliderProps> = ({min, max, calcLogText}) => {
-	const [finalAttack, setFinalAttack] = React.useState(50);
-	const [cursorLog, setCursorLog] = React.useState('');
-
+const FinalAttackSliderImpl: React.FC<SliderProps> = ({min, max, finalAttack, setFinalAttack, cursorLog}) => {
 	/**
 	 * finalAttackを変更する際の処理
 	 * @param value 新しい値
 	 */
 	const setValueFunc2 = (value: number) => {
 		setFinalAttack(value);
-		setCursorLog(calcLogText(value));
 	}
 
 	return (<FinalAttackSlider value={finalAttack} min={min} max={max} setValueFunc={setValueFunc2} cursorLog={cursorLog}/>);

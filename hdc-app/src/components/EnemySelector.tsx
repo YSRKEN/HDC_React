@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Form } from 'react-bootstrap';
 
-const FORMATION_LIST = ['単縦', '複縦', '輪形', '梯形', '単横', '警戒', '第一(単横)', '第二(複縦)', '第三(輪形)', '第四(単縦)'];
+const FORMATION_LIST = ['単縦', '複縦', '輪形', '梯形', '単横', '第一(単横)', '第二(複縦)', '第三(輪形)', '第四(単縦)'];
 const STATUS_LIST = ['T有', '同航', '反航', 'T不'];
 const ATTACK_TYPE_LIST = ['航空', '砲撃', '対潜', '雷撃', '夜戦'];
 

@@ -157,6 +157,11 @@ const App: React.FC = () => {
    */
   const calcLogTextImpl = (value: number): string => calcLogText(value, chartData);
 
+  const setFinalAttack2 = (value: number) => {
+    setFinalAttack(value);
+    setCursorLog(calcLogTextImpl(value));
+  }
+
   // Hooksを設定した
 	const [graphName, setGraphName] = React.useState(loadSettingString('name', '入力値'));
   const [paramList, setParamList] = React.useState<IGraphParam[]>(
@@ -167,6 +172,8 @@ const App: React.FC = () => {
   const [minFinalAttack, setMinFinalAttack] = React.useState(0);
   const [maxFinalAttack, setMaxFinalAttack] = React.useState(200);
   const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
+  const [finalAttack, setFinalAttack] = React.useState(50);
+	const [cursorLog, setCursorLog] = React.useState('');
 
   React.useEffect(() => {
     const temp: any = chartData.datasets;
@@ -193,8 +200,9 @@ const App: React.FC = () => {
             <InputSettingImpl redrawNowChartData={redrawNowChartData} addParam={addParam}
               graphName={graphName} setGraphName={setGraphName}/>
             <OutputGraph graphData={chartData} setIgnoreNames={setIgnoreNames} />
-            <EnemySelectorImpl/>
-            <FinalAttackSliderImpl min={minFinalAttack} max={maxFinalAttack} calcLogText={calcLogTextImpl}/>
+            <EnemySelectorImpl setFinalAttack={setFinalAttack2}/>
+            <FinalAttackSliderImpl min={minFinalAttack} max={maxFinalAttack}
+            finalAttack={finalAttack} setFinalAttack={setFinalAttack2} cursorLog={cursorLog}/>
             <OutputList params={paramList} deleteParam={deleteParam}/>
           </Col>
         </Row>
