@@ -8,6 +8,7 @@ const outputPath = path.join(reportDir, 'dependabot-alerts-open.json');
 const preferredGhPath = process.env.GH_EXE ?? 'C:\\Program Files\\GitHub CLI\\gh.exe';
 const ghBin = existsSync(preferredGhPath) ? preferredGhPath : 'gh';
 const ghConfigDir = process.env.GH_CONFIG_DIR ?? path.join(reportDir, '.gh-config');
+const MAX_BUFFER_BYTES = 50 * 1024 * 1024;
 
 mkdirSync(reportDir, { recursive: true });
 mkdirSync(ghConfigDir, { recursive: true });
@@ -17,7 +18,8 @@ if (!token) {
   try {
     token = execFileSync(ghBin, ['auth', 'token'], {
       encoding: 'utf8',
-      env: { ...process.env }
+      env: { ...process.env },
+      maxBuffer: MAX_BUFFER_BYTES
     }).trim();
   } catch (_error) {
     token = '';
@@ -52,7 +54,7 @@ const env = {
 const rawResponse = execFileSync(
   ghBin,
   ['api', `repos/${REPOSITORY}/dependabot/alerts`, '--paginate', '--slurp'],
-  { encoding: 'utf8', env }
+  { encoding: 'utf8', env, maxBuffer: MAX_BUFFER_BYTES }
 );
 
 const pages = JSON.parse(rawResponse);
