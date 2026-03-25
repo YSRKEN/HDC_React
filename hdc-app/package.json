@@ -18,7 +18,7 @@
     "security:compare": "node ./scripts/security/compare-security-reports.mjs"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "12.1.5",
     "@types/node": "22.15.30",
     "@types/react": "17.0.83",
