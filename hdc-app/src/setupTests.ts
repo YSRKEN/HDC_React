@@ -1,4 +1,5 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
+import { beforeEach, vi } from 'vitest';
 
 const createJsonResponse = (body: unknown): Response => {
   return {
@@ -35,7 +36,7 @@ const mockFetchImplementation = async (input: RequestInfo | URL): Promise<Respon
   return createJsonResponse({});
 };
 
-const mockFetch = jest.fn<Promise<Response>, [RequestInfo | URL]>(mockFetchImplementation);
+const mockFetch = vi.fn<[RequestInfo | URL], Promise<Response>>(mockFetchImplementation);
 
 const mockedFetch = mockFetch as unknown as typeof fetch;
 

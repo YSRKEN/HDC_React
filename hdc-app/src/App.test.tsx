@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import App from './App';
 
-jest.mock('./components/OutputGraph', () => () => <div data-testid='output-graph' />);
+vi.mock('./components/OutputGraph', () => ({ default: () => <div data-testid='output-graph' /> }));
 
 it('主要画面の要素が表示される', async () => {
   render(<App />);
