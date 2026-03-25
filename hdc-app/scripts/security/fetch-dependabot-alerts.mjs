@@ -67,7 +67,9 @@ const normalizedAlerts = openAlerts.map(alert => ({
   created_at: alert.created_at,
   updated_at: alert.updated_at,
   html_url: alert.html_url,
+  manifest_path: alert.dependency?.manifest_path ?? null,
   dependency_scope: alert.dependency?.scope ?? null,
+  dependency_relationship: alert.dependency?.relationship ?? null,
   ecosystem:
     alert.dependency?.package?.ecosystem ??
     alert.security_vulnerability?.package?.ecosystem ??
