@@ -13,6 +13,23 @@ const MAX_BUFFER_BYTES = 50 * 1024 * 1024;
 mkdirSync(reportDir, { recursive: true });
 mkdirSync(ghConfigDir, { recursive: true });
 
+const writeSkippedReport = reason => {
+  writeFileSync(
+    outputPath,
+    JSON.stringify(
+      {
+        generatedAt: new Date().toISOString(),
+        repository: REPOSITORY,
+        skipped: true,
+        reason,
+        alerts: []
+      },
+      null,
+      2
+    )
+  );
+};
+
 let token = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN;
 if (!token) {
   try {
@@ -27,20 +44,7 @@ if (!token) {
 }
 
 if (!token) {
-  writeFileSync(
-    outputPath,
-    JSON.stringify(
-      {
-        generatedAt: new Date().toISOString(),
-        repository: REPOSITORY,
-        skipped: true,
-        reason: 'GH_TOKEN もしくは GITHUB_TOKEN が未設定のため取得をスキップしました。',
-        alerts: []
-      },
-      null,
-      2
-    )
-  );
+  writeSkippedReport('GH_TOKEN もしくは GITHUB_TOKEN が未設定のため取得をスキップしました。');
   console.warn('[security] GH token が未設定のため Dependabot alerts 取得をスキップしました。');
   process.exit(0);
 }
@@ -51,11 +55,31 @@ const env = {
   GH_TOKEN: token
 };
 
-const rawResponse = execFileSync(
-  ghBin,
-  ['api', `repos/${REPOSITORY}/dependabot/alerts`, '--paginate', '--slurp'],
-  { encoding: 'utf8', env, maxBuffer: MAX_BUFFER_BYTES }
-);
+let rawResponse = '';
+try {
+  rawResponse = execFileSync(
+    ghBin,
+    ['api', `repos/${REPOSITORY}/dependabot/alerts`, '--paginate', '--slurp'],
+    { encoding: 'utf8', env, maxBuffer: MAX_BUFFER_BYTES }
+  );
+} catch (error) {
+  const stderr = String(error?.stderr ?? '');
+  const stdout = String(error?.stdout ?? '');
+  const responseText = `${stdout}\n${stderr}`;
+  const isPermissionError =
+    responseText.includes('Resource not accessible by integration') ||
+    responseText.includes('HTTP 403');
+
+  if (isPermissionError) {
+    writeSkippedReport(
+      'トークン権限不足（HTTP 403）のため Dependabot alerts 取得をスキップしました。security-events: read 権限付きトークンで再実行してください。'
+    );
+    console.warn('[security] Dependabot alerts の取得権限が不足しているため、比較対象なしで続行します。');
+    process.exit(0);
+  }
+
+  throw error;
+}
 
 const pages = JSON.parse(rawResponse);
 const allAlerts = Array.isArray(pages) ? pages.flat() : [];
