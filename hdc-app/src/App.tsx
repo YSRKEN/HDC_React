@@ -1,5 +1,5 @@
-import * as Chart from 'chart.js';
 import * as React from 'react';
+import { ChartData } from 'chart.js';
 import { Col, Container, Row } from 'react-bootstrap';
 import './App.css';
 import OutputGraph from './components/OutputGraph';
@@ -29,6 +29,24 @@ export const CHART_COLORS = [
 	"#804000",
 ];
 
+interface IGraphPoint {
+  x: number;
+  y: number;
+}
+
+type ScatterChartData = ChartData<'scatter', IGraphPoint[], number>;
+
+const hexToRgba = (hexColor: string, alpha: number): string => {
+  const hex = hexColor.replace('#', '');
+  if (hex.length !== 6) {
+    return hexColor;
+  }
+  const r = Number.parseInt(hex.slice(0, 2), 16);
+  const g = Number.parseInt(hex.slice(2, 4), 16);
+  const b = Number.parseInt(hex.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 /**
  * アプリケーション全体
  */
@@ -41,28 +59,29 @@ const App: React.FC = () => {
 
   const getParam = (arg: {armor?: number, maxHp?: number, graphName?: string, nowHp?: number}): IGraphParam => {
     return {
-      "armor": arg.armor ? arg.armor : loadSettingInteger('armor', 49),
-      "maxHp": arg.maxHp ? arg.maxHp : loadSettingInteger('maxHp', 35),
-      "name": arg.graphName ? arg.graphName : loadSettingString('name', '入力値'),
-      "nowHp": arg.nowHp ? arg.nowHp : loadSettingInteger('nowHp', 35),
+      "armor": arg.armor ?? loadSettingInteger('armor', 49),
+      "maxHp": arg.maxHp ?? loadSettingInteger('maxHp', 35),
+      "name": arg.graphName ?? loadSettingString('name', '入力値'),
+      "nowHp": arg.nowHp ?? loadSettingInteger('nowHp', 35),
     };
   }
 
-	const createGraphData = (paramListArgs: IGraphParam[], ignoreNamesArgs: string[]) => {
+	const createGraphData = (paramListArgs: IGraphParam[], ignoreNamesArgs: string[]): ScatterChartData => {
 		let rightXValue = 200;
 		if (ignoreNamesArgs.length !== paramListArgs.length) {
 			rightXValue = Math.max(...paramListArgs
 				.filter(param => !ignoreNamesArgs.includes(param.name))
 				.map(param => calcMinStopperPower(param.armor, param.nowHp)));
     }
-    const datasets = {
+    const datasets: ScatterChartData = {
 			datasets: paramListArgs.map((param, i) => ({
-				backgroundColor: Chart.helpers.color(CHART_COLORS[i]).alpha(0.2).rgbString(),
+				backgroundColor: hexToRgba(CHART_COLORS[i % CHART_COLORS.length], 0.2),
 				borderColor: CHART_COLORS[i],
 				data: calcPlotData(param.maxHp, param.armor, param.nowHp, rightXValue + 10),
 				fill: false,
 				label: param.name,
-				pointRadius: 0
+				pointRadius: 0,
+        showLine: true
 			}))
     };
     return datasets;
@@ -131,17 +150,21 @@ const App: React.FC = () => {
    * @param value カーソル値
    * @param chart グラフ情報
    */
-  const calcLogText = (value: number, chart: Chart.ChartData): string => {
-    const temp: any = chart.datasets;
-    const result = temp.map((data: any) => {
-      const plotData = data.data;
+  const calcLogText = (value: number, chart: ScatterChartData): string => {
+    const result = chart.datasets.map(data => {
+      const plotData = data.data as IGraphPoint[];
       const plotDataLen = plotData.length;
+      if (plotDataLen === 0) {
+        return {'value': 0, 'label': data.label ?? ''};
+      }
       if (plotData[0].x > value) {
-        return {'value': plotData[0].y, 'label': data.label};
+        return {'value': plotData[0].y, 'label': data.label ?? ''};
       } else if (plotData[plotDataLen - 1].x < value) {
-        return {'value': plotData[plotDataLen - 1].y, 'label': data.label};
+        return {'value': plotData[plotDataLen - 1].y, 'label': data.label ?? ''};
       } else {
-        return {'value': plotData.filter((pair: any) => pair.x === value).map((pair:any) => pair.y)[0], 'label': data.label};
+        const sameXPair = plotData.find(pair => pair.x === value);
+        const fallback = sameXPair ?? plotData[plotDataLen - 1];
+        return {'value': fallback.y, 'label': data.label ?? ''};
       }
     });
     let logText = '';
@@ -171,22 +194,17 @@ const App: React.FC = () => {
   const [ignoreNames, setIgnoreNames] = React.useState<string[]>([]);
   const [minFinalAttack, setMinFinalAttack] = React.useState(0);
   const [maxFinalAttack, setMaxFinalAttack] = React.useState(200);
-  const [chartData, setChartData] = React.useState<Chart.ChartData>(createGraphData(tempParamList, ignoreNames));
+  const [chartData, setChartData] = React.useState<ScatterChartData>(createGraphData(tempParamList, ignoreNames));
   const [finalAttack, setFinalAttack] = React.useState(50);
 	const [cursorLog, setCursorLog] = React.useState('');
 
   React.useEffect(() => {
-    const temp: any = chartData.datasets;
-    const minX = Math.min(...temp.map(
-      (data: any) => Math.min(...data.data.map(
-        (pair: any) => pair.x
-      ))
-    ));
-    const maxX = Math.max(...temp.map(
-      (data: any) => Math.max(...data.data.map(
-        (pair: any) => pair.x
-      ))
-    ));
+    const datasets = chartData.datasets.map(data => data.data as IGraphPoint[]);
+    if (datasets.length === 0) {
+      return;
+    }
+    const minX = Math.min(...datasets.map(data => Math.min(...data.map(pair => pair.x))));
+    const maxX = Math.max(...datasets.map(data => Math.max(...data.map(pair => pair.x))));
     setMinFinalAttack(minX);
     setMaxFinalAttack(maxX);
   }, [chartData]);

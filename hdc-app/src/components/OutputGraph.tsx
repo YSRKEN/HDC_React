@@ -1,33 +1,58 @@
-import * as Chart from 'chart.js';
 import * as React from 'react';
+import {
+	Chart as ChartJS,
+	ChartData,
+	ChartOptions,
+	Legend,
+	LineElement,
+	LinearScale,
+	PointElement,
+	Tooltip
+} from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 
-const OutputGraph: React.FC<{graphData: Chart.ChartData, setIgnoreNames: (value: string[]) => void}>
-	= ({graphData, setIgnoreNames}) => {
-	const scatterElement = React.useRef<Scatter>(null);
+ChartJS.register(Legend, LineElement, LinearScale, PointElement, Tooltip);
 
-	const onClickGraph = () => {
-		const scatterObject = scatterElement.current;
-		if (scatterObject == null) {
-			return;
+interface IGraphPoint {
+	x: number;
+	y: number;
+}
+
+type ScatterChartData = ChartData<'scatter', IGraphPoint[], number>;
+
+const OutputGraph: React.FC<{graphData: ScatterChartData, setIgnoreNames: (value: string[]) => void}>
+	= ({graphData, setIgnoreNames}) => {
+	const options = React.useMemo<ChartOptions<'scatter'>>(() => ({
+		elements: { line: { tension: 0 } },
+		scales: {
+			x: { title: { display: true, text: '最終攻撃力' } },
+			y: { title: { display: true, text: '大破率(％)' } }
+		},
+		plugins: {
+			legend: {
+				onClick: (_event, legendItem, legend) => {
+					const datasetIndex = legendItem.datasetIndex;
+					if (typeof datasetIndex !== 'number') {
+						return;
+					}
+					const chart = legend.chart;
+					chart.setDatasetVisibility(datasetIndex, !chart.isDatasetVisible(datasetIndex));
+					chart.update();
+					const ignoreNames = legend.chart.data.datasets
+						.map((dataset, index) => ({
+							hidden: !legend.chart.isDatasetVisible(index),
+							name: dataset.label ?? ''
+						}))
+						.filter(item => item.hidden)
+						.map(item => item.name);
+					setIgnoreNames(ignoreNames);
+				}
+			}
 		}
-		const temp: any = scatterObject.chartInstance;
-		const legendItems: Array<{text: string, hidden: boolean}> = temp.legend.legendItems;
-		const ignoreNames = legendItems.filter(item => item.hidden).map(item => item.text);
-		setIgnoreNames(ignoreNames);
-	};
+	}), [setIgnoreNames]);
 
 	return (
-		<Scatter width={450} height={450} data={graphData}
-		ref={scatterElement} onElementsClick={onClickGraph}
-		options={{
-			elements: { line: { tension: 0 } },
-			scales: {
-				xAxes: [{ scaleLabel: { display: true, labelString: '最終攻撃力' }, }],
-				yAxes: [{ scaleLabel: { display: true, labelString: '大破率(％)' }, }]
-			},
-			showLines: true
-		}} />
+		<Scatter width={450} height={450} data={graphData} options={options} />
 	);
 }
 
